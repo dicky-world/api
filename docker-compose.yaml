@@ -1,0 +1,10 @@
+version: "3"
+services:
+  service:
+    build: .
+    container_name: api
+    restart: always
+    image: dickie/api
+    env_file: .env
+    ports: 
+      - "9990:9990"
