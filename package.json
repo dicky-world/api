@@ -17,7 +17,7 @@
     "watch": "npm run generate && concurrently -k -p \"[{name}]\" -n \"TypeScript, Node\" -c \"yello.bold, cyan.bold\" \"npm run watch-ts\" \"npm run watch-node\"",
     "prod": "yarn --production && export NODE_ENV=production && yarn build && yarn start",
     "prod-windows": "yarn --production && set NODE_ENV=production && yarn build && yarn start"
-    },
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/dicky/api.git"
@@ -51,9 +51,10 @@
     "typescript": "^3.5.2"
   },
   "dependencies": {
+    "@types/supertest": "^2.0.8",
     "aws-sdk": "^2.528.0",
     "bcrypt": "^3.0.6",
-    "bluebird": "^3.5.5",
+    "bluebird": "^3.7.0",
     "body-parser": "^1.19.0",
     "compress": "^0.99.0",
     "concurrently": "^4.1.1",
@@ -66,6 +67,7 @@
     "morgan": "^1.9.1",
     "rate-limiter-flexible": "^1.1.1",
     "socket.io": "^2.2.0",
+    "supertest": "^4.0.2",
     "tslint": "^5.19.0"
   }
 }

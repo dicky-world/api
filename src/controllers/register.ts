@@ -12,7 +12,7 @@ static validateRegister = async (req: Request, res: Response, next: NextFunction
     const schema = Joi.object().keys({
       email: Joi.string().lowercase().trim().email({ minDomainSegments: 2 }).required(),
       fullName: Joi.string().trim().max(30).required(),
-      password: Joi.string().trim().min(5).required(),
+      password: Joi.string().trim().min(6).required(),
     });
     const { email, password, fullName } = req.body;
     Joi.validate({ email, password, fullName }, schema, (err, val) => {

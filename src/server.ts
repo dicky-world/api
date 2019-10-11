@@ -1,3 +1,4 @@
+import * as bluebird from 'bluebird';
 import * as bodyParser from 'body-parser';
 import * as cors from 'cors';
 import * as dotenv from 'dotenv';
@@ -13,10 +14,11 @@ import { router } from './router';
 // Set env values
 dotenv.config();
 // Connect to MongoDB
+bluebird.promisifyAll(mongoose);
 mongoose.connect(`mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}/${process.env.DB_NAME}?retryWrites=true`,
 {useCreateIndex: true, useNewUrlParser: true, useFindAndModify: false, useUnifiedTopology: true});
-mongoose.connection.on('error', () => {
-  throw new Error(`unable to connect to database: ${process.env.DB_NAME}`);
+mongoose.connection.on('error', (error) => {
+  throw new Error(error.message);
 });
 
 // Configure CORS
