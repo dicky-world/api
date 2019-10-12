@@ -51,8 +51,7 @@ describe('## Visitor', () => {
                 expect(res.status).toBe(400);
                 expect(res.body.message).toEqual('You have already registered');
             } catch (error) {
-                error.message = `${error.message}\n\nfailing query: ${testUrl}`;
-                throw error;
+                throw new Error(error.message);
             } finally {
                 done();
             }
@@ -68,8 +67,7 @@ describe('## Visitor', () => {
                 expect(res.status).toBe(400);
                 expect(res.body[0].message).toEqual('\"email\" is not allowed to be empty');
             } catch (error) {
-                error.message = `${error.message}\n\nfailing query: ${testUrl}`;
-                throw error;
+                throw new Error(error.message);
             } finally {
                 done();
             }
@@ -85,8 +83,7 @@ describe('## Visitor', () => {
                 expect(res.status).toBe(400);
                 expect(res.body[0].message).toEqual('\"fullName\" is not allowed to be empty');
             } catch (error) {
-                error.message = `${error.message}\n\nfailing query: ${testUrl}`;
-                throw error;
+                throw new Error(error.message);
             } finally {
                 done();
             }
@@ -102,8 +99,7 @@ describe('## Visitor', () => {
                 expect(res.status).toBe(400);
                 expect(res.body[0].message).toEqual('\"password\" is not allowed to be empty');
             } catch (error) {
-                error.message = `${error.message}\n\nfailing query: ${testUrl}`;
-                throw error;
+                throw new Error(error.message);
             } finally {
                 done();
             }
@@ -119,8 +115,7 @@ describe('## Visitor', () => {
                 expect(res.status).toBe(400);
                 expect(res.body[0].message).toEqual('\"password\" length must be at least 6 characters long');
             } catch (error) {
-                error.message = `${error.message}\n\nfailing query: ${testUrl}`;
-                throw error;
+                throw new Error(error.message);
             } finally {
                 done();
             }
@@ -136,8 +131,7 @@ describe('## Visitor', () => {
                 expect(res.status).toBe(400);
                 expect(res.body[0].message).toEqual('\"fullName\" length must be less than or equal to 30 characters long');
             } catch (error) {
-                error.message = `${error.message}\n\nfailing query: ${testUrl}`;
-                throw error;
+                throw new Error(error.message);
             } finally {
                 done();
             }
@@ -153,8 +147,7 @@ describe('## Visitor', () => {
                 expect(res.status).toBe(400);
                 expect(res.body[0].message).toEqual('\"email\" must be a valid email');
             } catch (error) {
-                error.message = `${error.message}\n\nfailing query: ${testUrl}`;
-                throw error;
+                throw new Error(error.message);
             } finally {
                 done();
             }
@@ -171,8 +164,7 @@ describe('## Visitor', () => {
                 expect(res.body.message).toEqual('You are now registered');
                 expect(res.body).toHaveProperty('jwtToken');
             } catch (error) {
-                error.message = `${error.message}\n\nfailing query: ${testUrl}`;
-                throw error;
+                throw new Error(error.message);
             } finally {
                 done();
             }

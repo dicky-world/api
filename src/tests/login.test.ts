@@ -44,8 +44,7 @@ describe('## Visitor', () => {
                 expect(res.status).toBe(200);
                 expect(res.body.message).toEqual('You are now logged-in');
             } catch (error) {
-                error.message = `${error.message}\n\nfailing query: ${testUrl}`;
-                throw error;
+                throw new Error(error.message);
             } finally {
                 done();
             }
@@ -60,8 +59,7 @@ describe('## Visitor', () => {
                 expect(res.status).toBe(400);
                 expect(res.body.message).toEqual('Incorrect email or password');
             } catch (error) {
-                error.message = `${error.message}\n\nfailing query: ${testUrl}`;
-                throw error;
+                throw new Error(error.message);
             } finally {
                 done();
             }
@@ -76,8 +74,7 @@ describe('## Visitor', () => {
                 expect(res.status).toBe(400);
                 expect(res.body[0].message).toEqual('\"email\" must be a valid email');
             } catch (error) {
-                error.message = `${error.message}\n\nfailing query: ${testUrl}`;
-                throw error;
+                throw new Error(error.message);
             } finally {
                 done();
             }
@@ -92,8 +89,7 @@ describe('## Visitor', () => {
                 expect(res.status).toBe(400);
                 expect(res.body[0].message).toEqual('\"password\" length must be at least 6 characters long');
             } catch (error) {
-                error.message = `${error.message}\n\nfailing query: ${testUrl}`;
-                throw error;
+                throw new Error(error.message);
             } finally {
                 done();
             }
@@ -108,8 +104,7 @@ describe('## Visitor', () => {
                 expect(res.status).toBe(400);
                 expect(res.body.message).toEqual('You have not registered');
             } catch (error) {
-                error.message = `${error.message}\n\nfailing query: ${testUrl}`;
-                throw error;
+                throw new Error(error.message);
             } finally {
                 done();
             }

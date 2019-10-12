@@ -43,8 +43,7 @@ describe('## Visitor', () => {
                 expect(res.status).toBe(200);
                 expect(res.body.message).toEqual('Reset password email sent');
             } catch (error) {
-                error.message = `${error.message}\n\nfailing query: ${testUrl}`;
-                throw error;
+                throw new Error(error.message);
             } finally {
                 done();
             }
@@ -53,13 +52,12 @@ describe('## Visitor', () => {
         it('should validate that the `email` exists and return 400 error', async (done) => {
             try {
                 const res = await request(app).post(testUrl).set(headers).send({
-                    email: 'test66@dicky.world',
+                    email: 'testNewOne@dicky.world',
                 });
                 expect(res.status).toBe(400);
                 expect(res.body.message).toEqual('You need to register first');
             } catch (error) {
-                error.message = `${error.message}\n\nfailing query: ${testUrl}`;
-                throw error;
+                throw new Error(error.message);
             } finally {
                 done();
             }
@@ -68,13 +66,12 @@ describe('## Visitor', () => {
         it('should validate that the `email` exists and return 400 error', async (done) => {
             try {
                 const res = await request(app).post(testUrl).set(headers).send({
-                    email: 'test60@dicky',
+                    email: 'test6@dicky',
                 });
                 expect(res.status).toBe(400);
                 expect(res.body[0].message).toEqual('\"email\" must be a valid email');
             } catch (error) {
-                error.message = `${error.message}\n\nfailing query: ${testUrl}`;
-                throw error;
+                throw new Error(error.message);
             } finally {
                 done();
             }

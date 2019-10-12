@@ -42,8 +42,7 @@ describe('## Visitor', () => {
                 });
                 expect(res.status).toBe(200);
             } catch (error) {
-                error.message = `${error.message}\n\nfailing query: ${testUrl}`;
-                throw error;
+                throw new Error(error.message);
             } finally {
                 done();
             }
@@ -56,8 +55,7 @@ describe('## Visitor', () => {
                 });
                 expect(res.status).toBe(400);
             } catch (error) {
-                error.message = `${error.message}\n\nfailing query: ${testUrl}`;
-                throw error;
+                throw new Error(error.message);
             } finally {
                 done();
             }
@@ -70,8 +68,7 @@ describe('## Visitor', () => {
                 });
                 expect(res.status).toBe(400);
             } catch (error) {
-                error.message = `${error.message}\n\nfailing query: ${testUrl}`;
-                throw error;
+                throw new Error(error.message);
             } finally {
                 done();
             }

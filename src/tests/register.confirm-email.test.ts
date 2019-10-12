@@ -43,8 +43,7 @@ describe('## Visitor', () => {
                 expect(res.status).toBe(400);
                 expect(res.body[0].message).toEqual('\"confirmationCode\" length must be at least 40 characters long');
             } catch (error) {
-                error.message = `${error.message}\n\nfailing query: ${testUrl}`;
-                throw error;
+                throw new Error(error.message);
             } finally {
                 done();
             }
@@ -58,8 +57,7 @@ describe('## Visitor', () => {
                 expect(res.status).toBe(400);
                 expect(res.body[0].message).toEqual('\"confirmationCode\" is not allowed to be empty');
             } catch (error) {
-                error.message = `${error.message}\n\nfailing query: ${testUrl}`;
-                throw error;
+                throw new Error(error.message);
             } finally {
                 done();
             }
@@ -72,8 +70,7 @@ describe('## Visitor', () => {
                 });
                 expect(res.status).toBe(200);
             } catch (error) {
-                error.message = `${error.message}\n\nfailing query: ${testUrl}`;
-                throw error;
+                throw new Error(error.message);
             } finally {
                 done();
             }

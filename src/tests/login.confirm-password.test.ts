@@ -45,8 +45,7 @@ describe('## Visitor', () => {
                 expect(res.status).toBe(200);
                 expect(res.body.message).toEqual('Password reset');
             } catch (error) {
-                error.message = `${error.message}\n\nfailing query: ${testUrl}`;
-                throw error;
+                throw new Error(error.message);
             } finally {
                 done();
             }
@@ -61,8 +60,7 @@ describe('## Visitor', () => {
                 expect(res.status).toBe(400);
                 expect(res.body[0].message).toEqual('\"resetPasswordCode\" length must be at least 39 characters long');
             } catch (error) {
-                error.message = `${error.message}\n\nfailing query: ${testUrl}`;
-                throw error;
+                throw new Error(error.message);
             } finally {
                 done();
             }
@@ -77,8 +75,7 @@ describe('## Visitor', () => {
                 expect(res.status).toBe(400);
                 expect(res.body[0].message).toEqual('\"newPassword\" length must be at least 6 characters long');
             } catch (error) {
-                error.message = `${error.message}\n\nfailing query: ${testUrl}`;
-                throw error;
+                throw new Error(error.message);
             } finally {
                 done();
             }
