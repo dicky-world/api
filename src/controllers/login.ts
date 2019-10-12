@@ -11,7 +11,7 @@ class Login {
   static validateLogin = async (req: Request, res: Response, next: NextFunction) => {
     const schema = Joi.object().keys({
       email: Joi.string().lowercase().trim().email({ minDomainSegments: 2 }).required(),
-      password: Joi.string().min(5).required(),
+      password: Joi.string().min(6).required(),
     });
     const { email, password } = req.body;
     Joi.validate({ email, password }, schema, (err, val) => {
@@ -71,7 +71,7 @@ class Login {
 
   static validateConfirmPassword = async (req: Request, res: Response, next: NextFunction) => {
     const schema = Joi.object().keys({
-      newPassword: Joi.string().trim().min(5).required(),
+      newPassword: Joi.string().trim().min(6).required(),
       resetPasswordCode: Joi.string().trim().min(39).required(),
     });
     const { newPassword, resetPasswordCode } = req.body;

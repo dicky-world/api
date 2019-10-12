@@ -2,8 +2,8 @@ import * as bluebird from 'bluebird';
 import * as mongoose from 'mongoose';
 import * as request from 'supertest';
 
-import { userModel } from '../models/user';
-import { app } from '../server';
+import { userModel } from '../../models/user';
+import { app } from '../../server';
 
 jest.setTimeout(30000);
 const baseTestUrl = '/api/visitor';
