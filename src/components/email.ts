@@ -1,4 +1,6 @@
 import AWS = require('aws-sdk');
+import * as dotenv from 'dotenv';
+dotenv.config();
 
 class Email {
 
@@ -85,4 +87,4 @@ class Email {
   };
 }
 
-export {Email};
+export { Email };

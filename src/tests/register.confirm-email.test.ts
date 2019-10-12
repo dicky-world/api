@@ -63,12 +63,40 @@ describe('## Visitor', () => {
             }
         });
 
-        it('should validate that the `validationCode` is required and return 400 ok', async (done) => {
+        it('should validate that the `validationCode` is required and return 200 ok', async (done) => {
             try {
                 const res = await request(app).post(testUrl).set(headers).send({
                     confirmationCode: '0000000001000000000100000000010000000001',
                 });
                 expect(res.status).toBe(200);
+            } catch (error) {
+                throw new Error(error.message);
+            } finally {
+                done();
+            }
+        });
+
+
+        // make a user that has already confoirmed with this confirmationo code 
+        // it('should validate that the `validationCode` is required and return 200 ok', async (done) => {
+        //     try {
+        //         const res = await request(app).post(testUrl).set(headers).send({
+        //             confirmationCode: '0000000001000000000100000000010000000001',
+        //         });
+        //         expect(res.status).toBe(200);
+        //     } catch (error) {
+        //         throw new Error(error.message);
+        //     } finally {
+        //         done();
+        //     }
+        // });
+
+        it('should validate that the `validationCode` is invalid and return 200 ok', async (done) => {
+            try {
+                const res = await request(app).post(testUrl).set(headers).send({
+                    confirmationCode: '0000000001000000000100000000010000000099',
+                });
+                expect(res.status).toBe(400);
             } catch (error) {
                 throw new Error(error.message);
             } finally {
