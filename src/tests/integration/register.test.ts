@@ -5,7 +5,7 @@ import * as request from 'supertest';
 import { userModel } from '../../models/user';
 import { app } from '../../server';
 
-jest.setTimeout(30000);
+jest.setTimeout(50000);
 const baseTestUrl = '/api/visitor';
 
 const defaultUser = new userModel({

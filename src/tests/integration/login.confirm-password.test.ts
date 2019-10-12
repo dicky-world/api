@@ -5,7 +5,7 @@ import * as request from 'supertest';
 import { userModel } from '../../models/user';
 import { app } from '../../server';
 
-jest.setTimeout(30000);
+jest.setTimeout(50000);
 
 const defaultUser = new userModel({
     confirmationCode: '0000000001000000000100000000010000000004',
