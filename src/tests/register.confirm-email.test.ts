@@ -2,11 +2,12 @@ import * as bluebird from 'bluebird';
 import * as mongoose from 'mongoose';
 import * as request from 'supertest';
 
-import { userModel } from '../../models/user';
-import { app } from '../../server';
+import { userModel } from '../models/user';
+import { app } from '../server';
 
 jest.setTimeout(50000);
 
+const headers = ['Accept', 'application/json'];
 const defaultUser = new userModel({
     confirmationCode: '0000000001000000000100000000010000000001',
     email: 'test4@dicky.world',
@@ -36,34 +37,25 @@ describe('## Visitor', () => {
         });
 
         it('should validate that the `validationCode` is too short and return 400 ok', async () => {
-            const res = await request(app)
-                .post(testUrl)
-                .set('Accept', 'application/json')
-                .send({
-                    confirmationCode: '0000000003',
-                });
+            const res = await request(app).post(testUrl).set(headers).send({
+                confirmationCode: '0000000003',
+            });
             expect(res.status).toBe(400);
             expect(res.body[0].message).toEqual('\"confirmationCode\" length must be at least 40 characters long');
         });
 
         it('should validate that the `validationCode` is required and return 400 ok', async () => {
-            const res = await request(app)
-                .post(testUrl)
-                .set('Accept', 'application/json')
-                .send({
-                    confirmationCode: '',
-                });
+            const res = await request(app).post(testUrl).set(headers).send({
+                confirmationCode: '',
+            });
             expect(res.status).toBe(400);
             expect(res.body[0].message).toEqual('\"confirmationCode\" is not allowed to be empty');
         });
 
         it('should validate that the `validationCode` is required and return 400 ok', async () => {
-            const res = await request(app)
-                .post(testUrl)
-                .set('Accept', 'application/json')
-                .send({
-                    confirmationCode: '0000000001000000000100000000010000000001',
-                });
+            const res = await request(app).post(testUrl).set(headers).send({
+                confirmationCode: '0000000001000000000100000000010000000001',
+            });
             expect(res.status).toBe(200);
         });
     });
