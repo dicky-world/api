@@ -1,12 +1,9 @@
-import * as bluebird from 'bluebird';
-import * as mongoose from 'mongoose';
 import * as request from 'supertest';
-
 import { userModel } from '../models/user';
 import { app } from '../server';
 
 jest.setTimeout(50000);
-
+const testUrl = '/login';
 const headers = ['Accept', 'application/json'];
 const defaultUser = new userModel({
     confirmationCode: '0000000001000000000100000000010000000002',
@@ -16,70 +13,106 @@ const defaultUser = new userModel({
 });
 
 describe('## Visitor', () => {
-    const testUrl = '/login';
-
     describe(`# POST ${testUrl}`, () => {
 
-        beforeAll(async () => {
+        beforeAll(async (done) => {
             try {
                 await defaultUser.save();
-              } catch (error) {
-                  throw new Error(error.message);
-              }
+            } catch (error) {
+                throw new Error(error.message);
+            } finally {
+                done();
+            }
         });
 
-        afterAll(async () => {
+        afterAll(async (done) => {
             try {
                 await userModel.deleteOne({email: defaultUser.email});
             } catch (error) {
                 throw new Error(error.message);
+            } finally {
+                done();
             }
         });
 
-        it('should validate that the `email` and `password` is valid and return 200 ok', async () => {
-            const res = await request(app).post(testUrl).set(headers).send({
-                email: 'test5@dicky.world',
-                password: 'testPassword!',
-            });
-            expect(res.status).toBe(200);
-            expect(res.body.message).toEqual('You are now logged-in');
+        it('should validate that the `email` and `password` is valid and return 200 ok', async (done) => {
+            try {
+                const res = await request(app).post(testUrl).set(headers).send({
+                    email: 'test5@dicky.world',
+                    password: 'testPassword!',
+                });
+                expect(res.status).toBe(200);
+                expect(res.body.message).toEqual('You are now logged-in');
+            } catch (error) {
+                error.message = `${error.message}\n\nfailing query: ${testUrl}`;
+                throw error;
+            } finally {
+                done();
+            }
         });
 
-        it('should validate that the `email` and `password` is invalid and return 400 error', async () => {
-            const res = await request(app).post(testUrl).set(headers).send({
-                email: 'test5@dicky.world',
-                password: 'wrongpassword',
-            });
-            expect(res.status).toBe(400);
-            expect(res.body.message).toEqual('Incorrect email or password');
+        it('should validate that the `email` and `password` is invalid and return 400 error', async (done) => {
+            try {
+                const res = await request(app).post(testUrl).set(headers).send({
+                    email: 'test5@dicky.world',
+                    password: 'wrongpassword',
+                });
+                expect(res.status).toBe(400);
+                expect(res.body.message).toEqual('Incorrect email or password');
+            } catch (error) {
+                error.message = `${error.message}\n\nfailing query: ${testUrl}`;
+                throw error;
+            } finally {
+                done();
+            }
         });
 
-        it('should validate that the `email` is invalid and return 400 error', async () => {
-            const res = await request(app).post(testUrl).set(headers).send({
-                email: 'test5@dicky',
-                password: 'wrongpassword',
-            });
-            expect(res.status).toBe(400);
-            expect(res.body[0].message).toEqual('\"email\" must be a valid email');
+        it('should validate that the `email` is invalid and return 400 error', async (done) => {
+            try {
+                const res = await request(app).post(testUrl).set(headers).send({
+                    email: 'test5@dicky',
+                    password: 'wrongpassword',
+                });
+                expect(res.status).toBe(400);
+                expect(res.body[0].message).toEqual('\"email\" must be a valid email');
+            } catch (error) {
+                error.message = `${error.message}\n\nfailing query: ${testUrl}`;
+                throw error;
+            } finally {
+                done();
+            }
         });
 
-        it('should validate that the `password` is invalid and return 400 error', async () => {
-            const res = await request(app).post(testUrl).set(headers).send({
-                email: 'test5@dicky.world',
-                password: 'short',
-            });
-            expect(res.status).toBe(400);
-            expect(res.body[0].message).toEqual('\"password\" length must be at least 6 characters long');
+        it('should validate that the `password` is invalid and return 400 error', async (done) => {
+            try {
+                const res = await request(app).post(testUrl).set(headers).send({
+                    email: 'test5@dicky.world',
+                    password: 'short',
+                });
+                expect(res.status).toBe(400);
+                expect(res.body[0].message).toEqual('\"password\" length must be at least 6 characters long');
+            } catch (error) {
+                error.message = `${error.message}\n\nfailing query: ${testUrl}`;
+                throw error;
+            } finally {
+                done();
+            }
         });
 
-        it('should validate that the `password` is invalid and return 400 error', async () => {
-            const res = await request(app).post(testUrl).set(headers).send({
-                email: 'test_new@dicky.world',
-                password: 'testPassword!',
-            });
-            expect(res.status).toBe(400);
-            expect(res.body.message).toEqual('You have not registered');
+        it('should validate that the `password` is invalid and return 400 error', async (done) => {
+            try {
+                const res = await request(app).post(testUrl).set(headers).send({
+                    email: 'test_new@dicky.world',
+                    password: 'testPassword!',
+                });
+                expect(res.status).toBe(400);
+                expect(res.body.message).toEqual('You have not registered');
+            } catch (error) {
+                error.message = `${error.message}\n\nfailing query: ${testUrl}`;
+                throw error;
+            } finally {
+                done();
+            }
         });
-
     });
 });
