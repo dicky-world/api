@@ -49,7 +49,7 @@ interface Error {
 }
 app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
   if (err.status === 400 && err instanceof SyntaxError && 'body' in err) {
-    res.status(200).send({ message: 'JSON Syntax Error' });
+    res.status(400).send({ message: 'JSON Syntax Error' });
   } else {
     next();
   }
@@ -63,10 +63,10 @@ io.on('connection', (socket) => {
 
 // Start Server
 const port = process.env.API_PORT;
-server.listen(port, () => {
+if (process.env.NODE_ENV !== 'test') {
   // tslint:disable-next-line: no-console
-  console.log(`listening on ${port}`);
-});
+  server.listen(port, () => console.log(`listening on ${port}`));
+}
 
 // Serve Socket test page
 app.get('/socket', (req: express.Request, res: express.Response) => {

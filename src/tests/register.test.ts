@@ -5,6 +5,7 @@ import * as request from 'supertest';
 import { userModel } from '../models/user';
 import { app } from '../server';
 
+jest.setTimeout(30000);
 const baseTestUrl = '/api/visitor';
 
 const defaultUser = new userModel({
@@ -118,7 +119,8 @@ describe('## Visitor', () => {
             expect(res.status).toBe(400);
             expect(res.body[0].message).toEqual('\"fullName\" length must be less than or equal to 30 characters long');
         });
-        it('should validate that the `email` is valid and throw 400 error', async () => {
+
+        it('should validate that the `email` is not valid and throw 400 error', async () => {
             const res = await request(app)
                 .post('/register')
                 .set('Accept', 'application/json')

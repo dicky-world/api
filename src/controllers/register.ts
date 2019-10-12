@@ -75,7 +75,7 @@ static validateRegister = async (req: Request, res: Response, next: NextFunction
 
   static validateResendEmail = async (req: Request, res: Response, next: NextFunction) => {
     const schema = Joi.object().keys({
-      jwtToken: Joi.string().trim().required(),
+      jwtToken: Joi.string().regex(/^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_.+/=]*$/),
     });
     const { jwtToken } = req.body;
     Joi.validate({ jwtToken }, schema, (err, val) => {
@@ -87,21 +87,26 @@ static validateRegister = async (req: Request, res: Response, next: NextFunction
   };
 
   static resendEmail = async (req: Request, res: Response) => {
-    interface JwtInterface { email: string; id: string; }
-    const jwtData = jwt.verify(req.body.jwtToken, process.env.JWT_SECRET);
-    const isJWTData = (input: object | string): input is JwtInterface => {
-       return typeof input === 'object' && 'id' in input;
-    };
-    if (isJWTData(jwtData)) {
-      const _id = jwtData.id;
-      const account = await userModel.findOne({_id}).exec();
-      const { fullName, email, confirmationCode } = account;
-      const sent = await Email.confirmEmail(fullName, email, confirmationCode);
-      if (!sent) res.status(400).send({ message: 'Email not resent' });
-      else res.status(200).send({ message: 'Email resent' });
+    try {
+      interface JwtInterface { email: string; id: string; }
+      const jwtData = jwt.verify(req.body.jwtToken, process.env.JWT_SECRET);
+      const isJWTData = (input: object | string): input is JwtInterface => {
+        return typeof input === 'object' && 'id' in input;
+      };
+      if (isJWTData(jwtData)) {
+        const email = jwtData.email;
+        const account = await userModel.findOne({email}).exec();
+        const { fullName, confirmationCode } = account;
+        const sent = await Email.confirmEmail(fullName, email, confirmationCode);
+        if (!sent) res.status(400).send({ message: 'Email not resent' });
+        else res.status(200).send({ message: 'Email resent' });
+      } else {
+        res.status(400).send({ message: 'Invalid Token' });
+      }
+    } catch (error) {
+      res.status(400).send({ message: 'Invalid Token', error });
     }
   };
-
 }
 
 export {Register};
