@@ -12,4 +12,4 @@ install:
 - yarn
 script:
 - yarn test
-- yarn coveralls
+- yarn coverage
