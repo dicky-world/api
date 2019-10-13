@@ -12,66 +12,41 @@ const defaultUser = new userModel({
     password: 'testPassword!',
 });
 
-describe('## Visitor', () => {
+describe('## Register / Resend Email', () => {
     describe(`# POST ${testUrl}`, () => {
 
         beforeAll(async (done) => {
-            try {
-                await defaultUser.save();
-            } catch (error) {
-                throw new Error(error.message);
-            } finally {
-                done();
-            }
+            await defaultUser.save();
+            done();
         });
 
         afterAll(async (done) => {
-            try {
-                await userModel.deleteOne({email: defaultUser.email});
-            } catch (error) {
-                throw new Error(error.message);
-            } finally {
-                done();
-            }
+            await userModel.deleteOne({email: defaultUser.email});
+            done();
         });
 
         it('should validate that the `jwtToken` is valid and return 200 ok', async (done) => {
-            try {
-                const res = await request(app).post(testUrl).set(headers).send({
-                    jwtToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3QzQGRpY2t5LndvcmxkIiwiaWQiOiI1ZGExMjhjZTEwZDhlMzZiNzlkN2YzZmIiLCJpYXQiOjE1NzA4NDI4MzF9.7G0zv3Pgey__oT-8SuurKlWYrilqnIv772yG3pmnocA',
-                });
-                expect(res.status).toBe(200);
-            } catch (error) {
-                throw new Error(error.message);
-            } finally {
-                done();
-            }
+            const res = await request(app).post(testUrl).set(headers).send({
+                jwtToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3QzQGRpY2t5LndvcmxkIiwiaWQiOiI1ZGExMjhjZTEwZDhlMzZiNzlkN2YzZmIiLCJpYXQiOjE1NzA4NDI4MzF9.7G0zv3Pgey__oT-8SuurKlWYrilqnIv772yG3pmnocA',
+            });
+            expect(res.status).toBe(200);
+            done();
         });
 
         it('should validate that the `jwtToken` is invalid and return 400 error', async (done) => {
-            try {
-                const res = await request(app).post(testUrl).set(headers).send({
-                    jwtToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3QzQGRpY2t5LndvcmxkIiwiaWQiOiI1ZGExMjhjZTEwZDhlMzZiNzlkN2YzZmIiLCJpYXQiOjE1NzA4NDI4MzF97G0zv3Pgey__oT-8SuurKlWYrilqnIv772yG3pmnocA',
-                });
-                expect(res.status).toBe(400);
-            } catch (error) {
-                throw new Error(error.message);
-            } finally {
-                done();
-            }
+            const res = await request(app).post(testUrl).set(headers).send({
+                jwtToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3QzQGRpY2t5LndvcmxkIiwiaWQiOiI1ZGExMjhjZTEwZDhlMzZiNzlkN2YzZmIiLCJpYXQiOjE1NzA4NDI4MzF97G0zv3Pgey__oT-8SuurKlWYrilqnIv772yG3pmnocA',
+            });
+            expect(res.status).toBe(400);
+            done();
         });
 
         it('should validate that the `jwtToken` is invalid and return 400 error', async (done) => {
-            try {
-                const res = await request(app).post(testUrl).set(headers).send({
-                    jwtToken: 'NiIsInR5XVCJ9.eym4NDI4MzF9.7G0zv3PmnocA',
-                });
-                expect(res.status).toBe(400);
-            } catch (error) {
-                throw new Error(error.message);
-            } finally {
-                done();
-            }
+            const res = await request(app).post(testUrl).set(headers).send({
+                jwtToken: 'NiIsInR5XVCJ9.eym4NDI4MzF9.7G0zv3PmnocA',
+            });
+            expect(res.status).toBe(400);
+            done();
         });
     });
 });

@@ -12,69 +12,44 @@ const defaultUser = new userModel({
     password: '$2b$10$sdo7.5u0tANjLx09q2hFBuLe/YfgO6aLFGWwu7CSVHEcvC.Cn4ARS',
 });
 
-describe('## Visitor', () => {
+describe('## ## Login / Reset Password', () => {
     describe(`# POST ${testUrl}`, () => {
 
         beforeAll(async (done) => {
-            try {
-                await defaultUser.save();
-            } catch (error) {
-                throw new Error(error.message);
-            } finally {
-                done();
-            }
+            await defaultUser.save();
+            done();
         });
 
         afterAll(async (done) => {
-            try {
-                await userModel.deleteOne({email: defaultUser.email});
-            } catch (error) {
-                throw new Error(error.message);
-            } finally {
-                done();
-            }
+            await userModel.deleteOne({email: defaultUser.email});
+            done();
         });
 
         it('should validate that the `email` is valid and return 200 ok', async (done) => {
-            try {
-                const res = await request(app).post(testUrl).set(headers).send({
-                    email: 'test6@dicky.world',
-                });
-                expect(res.status).toBe(200);
-                expect(res.body.message).toEqual('Reset password email sent');
-            } catch (error) {
-                throw new Error(error.message);
-            } finally {
-                done();
-            }
+            const res = await request(app).post(testUrl).set(headers).send({
+                email: 'test6@dicky.world',
+            });
+            expect(res.status).toBe(200);
+            expect(res.body.message).toEqual('Reset password email sent');
+            done();
         });
 
         it('should validate that the `email` exists and return 400 error', async (done) => {
-            try {
-                const res = await request(app).post(testUrl).set(headers).send({
-                    email: 'testNewOne@dicky.world',
-                });
-                expect(res.status).toBe(400);
-                expect(res.body.message).toEqual('You need to register first');
-            } catch (error) {
-                throw new Error(error.message);
-            } finally {
-                done();
-            }
+            const res = await request(app).post(testUrl).set(headers).send({
+                email: 'testNewOne@dicky.world',
+            });
+            expect(res.status).toBe(400);
+            expect(res.body.message).toEqual('You need to register first');
+            done();
         });
 
         it('should validate that the `email` exists and return 400 error', async (done) => {
-            try {
-                const res = await request(app).post(testUrl).set(headers).send({
-                    email: 'test6@dicky',
-                });
-                expect(res.status).toBe(400);
-                expect(res.body[0].message).toEqual('\"email\" must be a valid email');
-            } catch (error) {
-                throw new Error(error.message);
-            } finally {
-                done();
-            }
+            const res = await request(app).post(testUrl).set(headers).send({
+                email: 'test6@dicky',
+            });
+            expect(res.status).toBe(400);
+            expect(res.body[0].message).toEqual('\"email\" must be a valid email');
+            done();
         });
     });
 });
