@@ -43,6 +43,7 @@ class Email {
     } catch (err) {
         // tslint:disable-next-line: no-console
         console.error(err.message);
+        return false;
     }
   };
 
@@ -83,6 +84,7 @@ class Email {
     } catch (err) {
         // tslint:disable-next-line: no-console
         console.error(err.message);
+        return false;
     }
   };
 }

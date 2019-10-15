@@ -1,8 +1,9 @@
+import { start } from 'mongo-unit';
 import * as request from 'supertest';
 import { userModel } from '../models/user';
-import { app } from '../server';
 
 jest.setTimeout(50000);
+let app: any;
 const testUrl = '/register';
 const headers = ['Accept', 'application/json'];
 const defaultUser = new userModel({
@@ -16,13 +17,18 @@ const newUser = new userModel({
     fullName: 'test user',
     password: 'testPassword!',
 });
-
 describe('## Register', () => {
     describe(`# POST ${testUrl}`, () => {
 
         beforeAll(async (done) => {
-            await defaultUser.save();
-            done();
+            await start()
+                .then((testMongoUrl: string) => {
+                    console.log("************testMongoUrl", testMongoUrl)
+                    process.env.DB_HOST = testMongoUrl;
+                    defaultUser.save();
+                    app = require('../server');
+                    done();
+                });
         });
 
         afterAll(async (done) => {
