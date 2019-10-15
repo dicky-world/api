@@ -1,8 +1,10 @@
+import * as core from 'express-serve-static-core';
 import * as request from 'supertest';
+import {Email} from '../components/email';
 import { userModel } from '../models/user';
-import { app } from '../server';
+import { mockApp } from './app';
+import {stopMongo} from './mongo';
 
-jest.setTimeout(50000);
 const testUrl = '/register/resend-email';
 const headers = ['Accept', 'application/json'];
 const defaultUser = new userModel({
@@ -11,21 +13,25 @@ const defaultUser = new userModel({
     fullName: 'test user',
     password: 'testPassword!',
 });
+let app: core.Express;
 
 describe('## Register / Resend Email', () => {
     describe(`# POST ${testUrl}`, () => {
 
         beforeAll(async (done) => {
+            app = await mockApp.then();
             await defaultUser.save();
             done();
         });
 
         afterAll(async (done) => {
             await userModel.deleteOne({email: defaultUser.email});
+            await stopMongo.then();
             done();
         });
 
         it('should validate that the `jwtToken` is valid and return 200 ok', async (done) => {
+            Email.confirmEmail = jest.fn().mockReturnValue(true);
             const res = await request(app).post(testUrl).set(headers).send({
                 jwtToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3QzQGRpY2t5LndvcmxkIiwiaWQiOiI1ZGExMjhjZTEwZDhlMzZiNzlkN2YzZmIiLCJpYXQiOjE1NzA4NDI4MzF9.7G0zv3Pgey__oT-8SuurKlWYrilqnIv772yG3pmnocA',
             });

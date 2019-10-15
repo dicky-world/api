@@ -1,7 +1,7 @@
 import { Email } from '../components/email';
 
+// tslint:disable-next-line:no-any
 let promise: jest.Mock<any, any>;
-
 const sendEmail = jest.fn();
 jest.mock('aws-sdk', () => {
     return {

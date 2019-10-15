@@ -1,8 +1,9 @@
+import * as core from 'express-serve-static-core';
 import * as request from 'supertest';
 import { userModel } from '../models/user';
-import { app } from '../server';
+import { mockApp } from './app';
+import {stopMongo} from './mongo';
 
-jest.setTimeout(50000);
 const testUrl =  '/register/confirm-email';
 const headers = ['Accept', 'application/json'];
 const defaultUser = new userModel({
@@ -11,17 +12,20 @@ const defaultUser = new userModel({
     fullName: 'test user',
     password: 'testPassword!',
 });
+let app: core.Express;
 
 describe('## Register / Confirm Email', () => {
     describe(`# POST ${testUrl}`, () => {
 
         beforeAll(async (done) => {
+            app = await mockApp.then();
             await defaultUser.save();
             done();
         });
 
         afterAll(async (done) => {
             await userModel.deleteOne({email: defaultUser.email});
+            await stopMongo.then();
             done();
         });
 
