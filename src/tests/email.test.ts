@@ -52,5 +52,19 @@ describe('## Email Component', () => {
             done();
         });
 
+        it('should return false when there is no Response from promise() `confirmEmail`', async (done) => {
+            promise = jest.fn().mockReturnValue(undefined);
+            const res = await Email.confirmEmail('fullname', 'test8@dicky.world', 'confirmationcode');
+            expect(res).toBe(false);
+            done();
+        });
+
+        it('should return false when there is no Response from promise() `resetPassword`', async (done) => {
+            promise = jest.fn().mockReturnValue(undefined);
+            const res = await Email.resetPassword('fullname', 'test8@dicky.world', 'resetcode');
+            expect(res).toBe(false);
+            done();
+        });
+
     });
 });

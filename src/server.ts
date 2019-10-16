@@ -79,4 +79,4 @@ app.get('/socket', (req: express.Request, res: express.Response) => {
   res.sendFile(path.resolve('./src/client/index.html'));
 });
 
-export {app};
+export {app, server};

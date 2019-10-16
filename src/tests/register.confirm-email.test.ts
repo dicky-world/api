@@ -62,5 +62,14 @@ describe('## Register / Confirm Email', () => {
             expect(res.status).toBe(400);
             done();
         });
+
+        it('should validate that the `validationCode` is used and return 400', async (done) => {
+            const { email, confirmationCode } = defaultUser;
+            await userModel.findOneAndUpdate({email}, {$set: {emailConfirmed : true, confirmationCode}});
+            const res = await request(app).post(testUrl).set(headers).send({confirmationCode});
+            expect(res.status).toBe(200);
+            await userModel.findOneAndUpdate({email}, {$unset: {emailConfirmed : false}});
+            done();
+        });
     });
 });
