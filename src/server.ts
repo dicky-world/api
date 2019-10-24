@@ -15,7 +15,13 @@ import { router } from './router';
 dotenv.config();
 // Connect to MongoDB
 bluebird.promisifyAll(mongoose);
-mongoose.connect(`mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}/${process.env.DB_NAME}?retryWrites=true`,
+let connectionString;
+if (process.env.DB_USERNAME && process.env.DB_PASSWORD) {
+  connectionString = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}/${process.env.DB_NAME}?retryWrites=true`;
+} else {
+  connectionString = `mongodb://${process.env.DB_HOST}/${process.env.DB_NAME}?retryWrites=true`;
+}
+mongoose.connect(connectionString,
 {useCreateIndex: true, useNewUrlParser: true, useFindAndModify: false, useUnifiedTopology: true});
 mongoose.connection.on('error', (error) => {
   throw new Error(error.message);
@@ -32,6 +38,8 @@ const options: cors.CorsOptions = {
 
 // Configure Server
 const app = express();
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 const server = new http.Server(app);
 const io = socketIo(server);
 
@@ -40,8 +48,6 @@ app.use(helmet());
 app.use(morgan('dev'));
 app.use(cors(options));
 app.options('*', cors(options));
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
 
 // Catch Syntax Error in JSON
 interface Error {
@@ -63,14 +69,14 @@ io.on('connection', (socket) => {
 
 // Start Server
 const port = process.env.API_PORT;
-if (process.env.NODE_ENV !== 'test') {
+// if (process.env.NODE_ENV !== 'test') {
   // tslint:disable-next-line: no-console
-  server.listen(port, () => console.log(`listening on ${port}`));
-}
+server.listen(port, () => console.log(`listening on ${port}`));
+// }
 
 // Serve Socket test page
 app.get('/socket', (req: express.Request, res: express.Response) => {
   res.sendFile(path.resolve('./src/client/index.html'));
 });
 
-export {app};
+export {app, server};

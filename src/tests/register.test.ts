@@ -1,9 +1,10 @@
-import { start } from 'mongo-unit';
+import * as core from 'express-serve-static-core';
 import * as request from 'supertest';
+import {Email} from '../components/email';
 import { userModel } from '../models/user';
+import { mockApp } from './app';
+import {stopMongo} from './mongo';
 
-jest.setTimeout(50000);
-let app: any;
 const testUrl = '/register';
 const headers = ['Accept', 'application/json'];
 const defaultUser = new userModel({
@@ -17,29 +18,28 @@ const newUser = new userModel({
     fullName: 'test user',
     password: 'testPassword!',
 });
+
+let app: core.Express;
+
 describe('## Register', () => {
     describe(`# POST ${testUrl}`, () => {
 
         beforeAll(async (done) => {
-            await start()
-                .then((testMongoUrl: string) => {
-                    console.log("************testMongoUrl", testMongoUrl)
-                    process.env.DB_HOST = testMongoUrl;
-                    defaultUser.save();
-                    app = require('../server');
-                    done();
-                });
+            app = await mockApp.then();
+            await defaultUser.save().then();
+            done();
         });
 
         afterAll(async (done) => {
-            await userModel.deleteOne({email: defaultUser.email});
-            await userModel.deleteOne({email: newUser.email});
+            await userModel.deleteOne({email: defaultUser.email}).then();
+            await userModel.deleteOne({email: newUser.email}).then();
+            await stopMongo.then();
             done();
         });
 
         it('should validate that the `email` has already been registered and throw 400 error', async (done) => {
             const res = await request(app).post(testUrl).set(headers).send({
-                email: 'test@dicky.world',
+                email: 'test1@dicky.world',
                 fullName: 'test user',
                 password: 'testPassword!',
             });
@@ -115,6 +115,7 @@ describe('## Register', () => {
         });
 
         it('should validate that the `newUser` is valid and return 200 ok', async (done) => {
+            Email.confirmEmail = jest.fn().mockReturnValue(true);
             const res = await request(app).post(testUrl).set(headers).send({
                 email: 'test2@dicky.world',
                 fullName: 'test user',

@@ -1,6 +1,8 @@
+import * as core from 'express-serve-static-core';
 import * as request from 'supertest';
 import { userModel } from '../models/user';
-import { app } from '../server';
+import { mockApp } from './app';
+import {stopMongo} from './mongo';
 
 jest.setTimeout(50000);
 const testUrl = '/login/confirm-password';
@@ -13,16 +15,19 @@ const defaultUser = new userModel({
     resetPasswordCode: 'e0da14ff211f3167f9a74085ba3d2f22659bb727',
 });
 
+let app: core.Express;
 describe('## Login / Confirm Password', () => {
     describe(`# POST ${testUrl}`, () => {
 
         beforeAll(async (done) => {
+            app = await mockApp.then();
             await defaultUser.save();
             done();
         });
 
         afterAll(async (done) => {
             await userModel.deleteOne({email: defaultUser.email});
+            await stopMongo.then();
             done();
         });
 

@@ -1,8 +1,9 @@
+import * as core from 'express-serve-static-core';
 import * as request from 'supertest';
 import { userModel } from '../models/user';
-import { app } from '../server';
+import { mockApp } from './app';
+import {stopMongo} from './mongo';
 
-jest.setTimeout(50000);
 const testUrl =  '/register/confirm-email';
 const headers = ['Accept', 'application/json'];
 const defaultUser = new userModel({
@@ -11,17 +12,20 @@ const defaultUser = new userModel({
     fullName: 'test user',
     password: 'testPassword!',
 });
+let app: core.Express;
 
 describe('## Register / Confirm Email', () => {
     describe(`# POST ${testUrl}`, () => {
 
         beforeAll(async (done) => {
+            app = await mockApp.then();
             await defaultUser.save();
             done();
         });
 
         afterAll(async (done) => {
             await userModel.deleteOne({email: defaultUser.email});
+            await stopMongo.then();
             done();
         });
 
@@ -56,6 +60,15 @@ describe('## Register / Confirm Email', () => {
                 confirmationCode: '0000000001000000000100000000010000000099',
             });
             expect(res.status).toBe(400);
+            done();
+        });
+
+        it('should validate that the `validationCode` is used and return 400', async (done) => {
+            const { email, confirmationCode } = defaultUser;
+            await userModel.findOneAndUpdate({email}, {$set: {emailConfirmed : true, confirmationCode}});
+            const res = await request(app).post(testUrl).set(headers).send({confirmationCode});
+            expect(res.status).toBe(200);
+            await userModel.findOneAndUpdate({email}, {$unset: {emailConfirmed : false}});
             done();
         });
     });

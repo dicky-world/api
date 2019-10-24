@@ -1,7 +1,7 @@
 import { Email } from '../components/email';
 
+// tslint:disable-next-line:no-any
 let promise: jest.Mock<any, any>;
-
 const sendEmail = jest.fn();
 jest.mock('aws-sdk', () => {
     return {
@@ -47,6 +47,20 @@ describe('## Email Component', () => {
 
         it('should throw the Error with `resetPassword` and console Temporary service failure', async (done) => {
             promise = jest.fn().mockRejectedValue({code: 451, cfId: 12, message: 'Temporary service failure'});
+            const res = await Email.resetPassword('fullname', 'test8@dicky.world', 'resetcode');
+            expect(res).toBe(false);
+            done();
+        });
+
+        it('should return false when there is no Response from promise() `confirmEmail`', async (done) => {
+            promise = jest.fn().mockReturnValue(undefined);
+            const res = await Email.confirmEmail('fullname', 'test8@dicky.world', 'confirmationcode');
+            expect(res).toBe(false);
+            done();
+        });
+
+        it('should return false when there is no Response from promise() `resetPassword`', async (done) => {
+            promise = jest.fn().mockReturnValue(undefined);
             const res = await Email.resetPassword('fullname', 'test8@dicky.world', 'resetcode');
             expect(res).toBe(false);
             done();
