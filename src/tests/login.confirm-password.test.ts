@@ -4,7 +4,6 @@ import { userModel } from '../models/user';
 import { mockApp } from './app';
 import {stopMongo} from './mongo';
 
-jest.setTimeout(50000);
 const testUrl = '/login/confirm-password';
 const headers = ['Accept', 'application/json'];
 const defaultUser = new userModel({
