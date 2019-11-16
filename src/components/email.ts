@@ -20,11 +20,10 @@ class Email {
           <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
         </head>
         <body style="margin: 0; padding: 0; min-height: 100vh">
-          Hi, ${fullName}.<br/>
+          Hey, ${fullName}!<br/><br/>
           Please confirm your ${process.env.SITE_NAME} account by clicking this link:
-          ${process.env.FRONT_END_URL}/confirm_email/${confirmationCode}/<br/>
-          Once you confirm, you will have full access to ${process.env.SITE_NAME} and all future<br/>
-          notifications will be sent to this email address.<br/><br/>
+          ${process.env.FRONT_END_URL}/confirm_email/${confirmationCode}/<br/><br/>
+          Once you confirm, you will have full access to ${process.env.SITE_NAME} and all future notifications will be sent to this email address.<br/><br/>
           - Team ${process.env.SITE_NAME}<br/><br/>
           Control which emails you receive from ${process.env.SITE_NAME} by adjusting your <a href='${process.env.FRONT_END_URL}/my/settings/'>settings.<a/>
         </body>
