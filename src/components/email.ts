@@ -39,6 +39,7 @@ class Email {
         ReplyToAddresses: [process.env.EMAIL_FROM], Source: process.env.EMAIL_FROM,
       };
       const data = await new AWS.SES({apiVersion: '2010-12-01'}).sendEmail(params).promise();
+      console.log(data);
       if (!data) return false; else return true;
     } catch (err) {
         // tslint:disable-next-line: no-console
