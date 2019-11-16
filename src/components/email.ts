@@ -20,7 +20,7 @@ class Email {
           <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
         </head>
         <body style="margin: 0; padding: 0; background-color: #F7F7F7; min-height: 100vh">
-          <h1>Confirm your ${process.env.SITE_NAME} account.<h1/>
+          <h1>Confirm your ${process.env.SITE_NAME} account<h1/>
           <hr/>
           Hi, ${fullName}.<br/>
           Please confirm your ${process.env.SITE_NAME} account by clicking this link:
