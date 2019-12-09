@@ -111,9 +111,9 @@ class User {
               }
             )
             .exec();
-          if (confirmed)
+          if (confirmed) {
             res.status(200).send({ message: 'New Password Saved' });
-          else res.status(400).send({ message: 'Server Error' });
+          } else res.status(400).send({ message: 'Server Error' });
         }
       } else {
         res.status(400).send({ message: 'Invalid Token' });
