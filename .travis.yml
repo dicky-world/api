@@ -1,15 +1,15 @@
 sudo: false
 language: node_js
 node_js:
-- '10'
+  - '10'
 branches:
   only:
-  - master
+    - master
 cache:
   directories:
-  - node_modules
+    - node_modules
 install:
-- yarn
+  - yarn
 script:
-- yarn test
-- yarn coveralls
+  - yarn test
+  - yarn coveralls

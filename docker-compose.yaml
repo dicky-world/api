@@ -1,4 +1,4 @@
-version: "3"
+version: '3'
 services:
   service:
     build: .
@@ -6,5 +6,5 @@ services:
     restart: always
     image: dicky/api
     env_file: .env
-    ports: 
-      - "9990:9990"
+    ports:
+      - '9990:9990'

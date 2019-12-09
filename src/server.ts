@@ -10,9 +10,11 @@ import * as morgan from 'morgan';
 import * as path from 'path';
 import * as socketIo from 'socket.io';
 import { router } from './router';
+import { tasks } from './tasks/tasks';
 
 // Set env values
 dotenv.config();
+
 // Connect to MongoDB
 bluebird.promisifyAll(mongoose);
 let connectionString;
@@ -21,18 +23,34 @@ if (process.env.DB_USERNAME && process.env.DB_PASSWORD) {
 } else {
   connectionString = `mongodb://${process.env.DB_HOST}/${process.env.DB_NAME}?retryWrites=true`;
 }
-mongoose.connect(connectionString,
-{useCreateIndex: true, useNewUrlParser: true, useFindAndModify: false, useUnifiedTopology: true});
+
+// Setup cron jobs
+tasks(connectionString);
+
+mongoose.connect(connectionString, {
+  useCreateIndex: true,
+  useFindAndModify: false,
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
+
 mongoose.connection.on('error', (error) => {
   throw new Error(error.message);
 });
 
 // Configure CORS
 const options: cors.CorsOptions = {
-  allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'X-Access-Token'],
+  allowedHeaders: [
+    'Origin',
+    'X-Requested-With',
+    'Content-Type',
+    'Accept',
+    'X-Access-Token',
+  ],
   credentials: true,
   methods: 'GET, HEAD, OPTIONS, PUT, PATCH, POST, DELETE',
-  origin: (origin, callback) => callback(null, process.env.CORS_WHITELIST.indexOf(origin) !== -1),
+  origin: (origin, callback) =>
+    callback(null, process.env.CORS_WHITELIST.indexOf(origin) !== -1),
   preflightContinue: false,
 };
 
@@ -53,13 +71,20 @@ app.options('*', cors(options));
 interface Error {
   status?: number;
 }
-app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
-  if (err.status === 400 && err instanceof SyntaxError && 'body' in err) {
-    res.status(400).send({ message: 'JSON Syntax Error' });
-  } else {
-    next();
+app.use(
+  (
+    err: Error,
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ) => {
+    if (err.status === 400 && err instanceof SyntaxError && 'body' in err) {
+      res.status(400).send({ message: 'JSON Syntax Error' });
+    } else {
+      next();
+    }
   }
-});
+);
 app.use('/', router);
 
 io.on('connection', (socket) => {
@@ -69,14 +94,12 @@ io.on('connection', (socket) => {
 
 // Start Server
 const port = process.env.API_PORT;
-// if (process.env.NODE_ENV !== 'test') {
-  // tslint:disable-next-line: no-console
+// tslint:disable-next-line: no-console
 server.listen(port, () => console.log(`listening on ${port}`));
-// }
 
 // Serve Socket test page
 app.get('/socket', (req: express.Request, res: express.Response) => {
   res.sendFile(path.resolve('./src/client/index.html'));
 });
 
-export {app, server};
+export { app, server };
