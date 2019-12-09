@@ -49,9 +49,13 @@ const options: cors.CorsOptions = {
   ],
   credentials: true,
   methods: 'GET, HEAD, OPTIONS, PUT, PATCH, POST, DELETE',
-  origin: (origin, callback) =>
-    callback(null, process.env.CORS_WHITELIST.indexOf(origin) !== -1),
-  preflightContinue: false,
+  origin: (origin, callback) => {
+    console.log(origin);
+    console.log('----');
+    console.log(process.env.CORS_WHITELIST);
+    console.log(process.env.CORS_WHITELIST.indexOf(origin));
+    // callback(null, process.env.CORS_WHITELIST.indexOf(origin) !== -1), {preflightContinue: false};
+  }
 };
 
 // Configure Server
