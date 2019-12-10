@@ -26,7 +26,7 @@ class Store {
       console.log(data);
       return data;
     } catch (error) {
-      throw new Error('S3 Error 1');
+      throw new Error('S3 Error 1' + error);
     }
   };
 
@@ -43,7 +43,7 @@ class Store {
       );
       return data;
     } catch (error) {
-      throw new Error('S3 Error 2');
+      throw new Error('S3 Error 2' + error);
     }
   };
 }
