@@ -21,7 +21,7 @@ let connectionString;
 if (process.env.DB_USERNAME && process.env.DB_PASSWORD) {
   connectionString = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}/${process.env.DB_NAME}?retryWrites=true`;
 } else {
-  connectionString = `mongodb://${process.env.DB_HOST}/${process.env.DB_NAME}?retryWrites=true`;
+  throw new Error('No .env file found');
 }
 
 // Setup cron jobs
