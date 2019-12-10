@@ -31,20 +31,22 @@ class Store {
   };
 
   static deleteObject = async (keyToDelete: string) => {
-    try {
-      const data = s3.deleteObject(
-        {
-          Bucket: 'img.dicky.world',
-          Key: keyToDelete,
-        },
-        (err) => {
-          if (err) throw new Error('S3 Failed to delete image');
-        }
-      );
-      return data;
-    } catch (error) {
-      throw new Error('S3 Error 2' + error);
-    }
+    if (keyToDelete) {
+      try {
+        const data = s3.deleteObject(
+          {
+            Bucket: 'img.dicky.world',
+            Key: keyToDelete,
+          },
+          (err) => {
+            if (err) throw new Error('S3 Failed to delete image');
+          }
+        );
+        return data;
+      } catch (error) {
+        throw new Error('S3 Error 2' + error);
+      }
+    } else return true;
   };
 }
 
