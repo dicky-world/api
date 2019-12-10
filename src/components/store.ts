@@ -17,7 +17,7 @@ class Store {
   ) => {
     try {
       const data = s3.getSignedUrl('putObject', {
-        Bucket: process.env.SES_BUCKET_NAME,
+        Bucket: 'img.dicky.world',
         ContentType: contentType,
         Expires: expires,
         Key: key,
@@ -34,7 +34,7 @@ class Store {
     try {
       const data = s3.deleteObject(
         {
-          Bucket: process.env.SES_BUCKET_NAME,
+          Bucket: 'img.dicky.world',
           Key: keyToDelete,
         },
         (err) => {
