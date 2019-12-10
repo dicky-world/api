@@ -11,6 +11,7 @@ const router = Router();
 router.get('/health', Health.check);
 
 router.put('/my/location', My.validateLocation, My.location);
+router.post('/my/avatar', My.validateAvatar, My.avatar);
 router.post('/login', Login.validateLogin, Login.login);
 router.post('/join', Join.validateJoin, Join.join);
 router.post('/join/resend-email', Join.validateResendEmail, Join.resendEmail);

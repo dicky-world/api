@@ -6,8 +6,10 @@ const tasks = (connectionString: string) => {
 
   agenda.define('Top of the hour', async (job) => {
     try {
+      // tslint:disable-next-line: no-console
       console.log('Top of the hour!');
     } catch (error) {
+      // tslint:disable-next-line: no-console
       console.error('Task Error' + error);
     }
   });
