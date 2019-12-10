@@ -23,9 +23,10 @@ class Store {
         Key: key,
       });
       if (!data) throw new Error('S3 Failed to provide signed URL');
+      console.log(data);
       return data;
     } catch (error) {
-      throw new Error('S3 Error');
+      throw new Error('S3 Error 1');
     }
   };
 
@@ -42,7 +43,7 @@ class Store {
       );
       return data;
     } catch (error) {
-      throw new Error('S3 Error');
+      throw new Error('S3 Error 2');
     }
   };
 }
