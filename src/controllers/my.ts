@@ -123,8 +123,9 @@ class My {
         .exec();
       if (!account) throw new Error('Database failed to find');
       if (account.shared.avatarId) {
-      const deletedOldImg = await Store.deleteObject(account.shared.avatarId);
-      if (!deletedOldImg) throw new Error('Old Image was not deleted');
+        const deletedOldImg = await Store.deleteObject(account.shared.avatarId);
+        if (!deletedOldImg) throw new Error('Old Image was not deleted');
+      }
       account.shared.avatarId = req.body.avatarId;
       res
         .status(200)
