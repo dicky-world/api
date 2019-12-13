@@ -4,7 +4,6 @@ import { NextFunction, Request, Response } from 'express';
 import * as jwt from 'jsonwebtoken';
 import sha1 = require('sha1');
 import { Store } from '../components/store';
-import { userModel } from '../models/user';
 
 class Upload {
   static validateSignedUrl = async (
@@ -20,7 +19,7 @@ class Upload {
       });
       const { jwtToken } = req.body;
       Joi.validate({ jwtToken }, schema, (err, val) => {
-        if (err) throw new Error('Failed to validate input');
+        if (err) throw new Error('Failed to validate input ' + err.details[0].message);
         req.body = val;
         next();
       });

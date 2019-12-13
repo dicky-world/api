@@ -29,7 +29,7 @@ class Login {
       });
       const { email, password } = req.body;
       Joi.validate({ email, password }, schema, (err, val) => {
-        if (err) throw new Error('Failed to validate input');
+        if (err) throw new Error('Failed to validate input ' + err.details[0].message);
         req.body = val;
         next();
       });
@@ -81,7 +81,7 @@ class Login {
       });
       const { email } = req.body;
       Joi.validate({ email }, schema, (err, val) => {
-        if (err) throw new Error('Failed to validate input');
+        if (err) throw new Error('Failed to validate input ' + err.details[0].message);
         req.body = val;
         next();
       });
@@ -144,7 +144,7 @@ class Login {
       });
       const { newPassword, resetCode } = req.body;
       Joi.validate({ newPassword, resetCode }, schema, (err, val) => {
-        if (err) throw new Error('Failed to validate input');
+        if (err) throw new Error('Failed to validate input ' + err.details[0].message);
         req.body = val;
         next();
       });

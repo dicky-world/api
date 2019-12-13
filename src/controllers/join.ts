@@ -33,7 +33,7 @@ class Join {
       });
       const { email, password, fullName } = req.body;
       Joi.validate({ email, password, fullName }, schema, (err, val) => {
-        if (err) throw new Error('Failed to validate input');
+        if (err) throw new Error('Failed to validate input ' + err.details[0].message);
         req.body = val;
         next();
       });
@@ -97,7 +97,7 @@ class Join {
       });
       const { confirmationCode } = req.body;
       Joi.validate({ confirmationCode }, schema, (err, val) => {
-        if (err) throw new Error('Failed to validate input');
+        if (err) throw new Error('Failed to validate input ' + err.details[0].message);
         req.body = val;
         next();
       });
@@ -155,7 +155,7 @@ class Join {
       });
       const { jwtToken } = req.body;
       Joi.validate({ jwtToken }, schema, (err, val) => {
-        if (err) throw new Error('Failed to validate input');
+        if (err) throw new Error('Failed to validate input ' + err.details[0].message);
         req.body = val;
         next();
       });

@@ -16,7 +16,7 @@ router.post('/login', Login.validateLogin, Login.login);
 router.post('/join', Join.validateJoin, Join.join);
 router.post('/join/resend-email', Join.validateResendEmail, Join.resendEmail);
 router.post('/upload/signed-url', Upload.validateSignedUrl, Upload.signedUrl);
-// router.post('/user/profile', User.validateProfile, User.profile);
+router.post('/my/profile', My.validateProfile, My.profile);
 // router.post('/user/password', User.validatePassword, User.password);
 
 router.post(

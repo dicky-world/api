@@ -4,15 +4,8 @@ import { Document, Schema } from 'mongoose';
 interface UserModelInterface extends Document {
   email: {
     confirmationCode: string;
-    confirmed: boolean;
     confirmationSentAt: string;
-  };
-  investor: {
-    certificateUrl: string;
-    document: string;
-    url: string;
-    submittedAt: string;
-    confirmedAt: string;
+    confirmed: boolean;
   };
   password: {
     hash: string;
@@ -21,16 +14,18 @@ interface UserModelInterface extends Document {
   };
   shared: {
     avatarId: string;
+    bio: string;
+    country: string;
+    dob: string;
     email: string;
     fullName: string;
-    investorSubmitted: boolean;
-    investorConfirmed: boolean;
+    gender: string;
     language: string;
     location: string;
     loggedIn: boolean;
+    username: string;
     warningMessage: string;
-    worbliAccountName: string;
-    worbliConfirmed: boolean;
+    webSite: string;
   };
 }
 
@@ -41,13 +36,6 @@ const userSchema: Schema = new Schema(
       confirmationSentAt: { type: Date },
       confirmed: { type: Boolean, default: false },
     },
-    investor: {
-      certificateUrl: { type: String },
-      confirmedAt: { type: Date },
-      documentId: { type: String },
-      documentUrl: { type: String },
-      submittedAt: { type: Date },
-    },
     password: {
       hash: { type: String },
       resetCode: { type: String, unique: true, index: true },
@@ -55,16 +43,18 @@ const userSchema: Schema = new Schema(
     },
     shared: {
       avatarId: { type: String },
+      bio: { type: String },
+      country: { type: String },
+      dob: { type: Date },
       email: { type: String, required: true, unique: true, index: true },
       fullName: { type: String },
-      investorConfirmed: { type: Boolean, default: false },
-      investorSubmitted: { type: Boolean, default: false },
+      gender: { type: String },
       language: { type: String, default: 'en' },
       location: { type: String },
       loggedIn: { type: Boolean, default: true },
+      username: { type: String, unique: true, index: true }, // TODO MAKE REQUIRED
       warningMessage: { type: String, default: 'verify' },
-      worbliAccountName: { type: String },
-      worbliConfirmed: { type: Boolean, default: false },
+      webSite: { type: String },
     },
   },
   {
