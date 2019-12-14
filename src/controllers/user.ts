@@ -38,13 +38,13 @@ class User {
         email: string;
         id: string;
       }
-      const jwtData = jwt.verify(req.body.jwtToken, process.env.JWT_SECRET);
+      const { jwtToken, fullName} = req.body;
+      const jwtData = jwt.verify(jwtToken, process.env.JWT_SECRET);
       const isJWTData = (input: object | string): input is JwtInterface => {
         return typeof input === 'object' && 'id' in input;
       };
       if (isJWTData(jwtData)) {
         const email = jwtData.email;
-        const fullName = req.body.fullName;
         const confirmed = await userModel
           .findOneAndUpdate(
             { email },
@@ -92,13 +92,13 @@ class User {
         email: string;
         id: string;
       }
-      const jwtData = jwt.verify(req.body.jwtToken, process.env.JWT_SECRET);
+      const { jwtToken, password } = req.body;
+      const jwtData = jwt.verify(jwtToken, process.env.JWT_SECRET);
       const isJWTData = (input: object | string): input is JwtInterface => {
         return typeof input === 'object' && 'id' in input;
       };
       if (isJWTData(jwtData)) {
         const email = jwtData.email;
-        const password = req.body.password;
         const hashedPassword = await bcrypt.hash(password, 10);
         if (!hashedPassword) {
           res.status(500).send({ message: 'Failed to encrypt your password' });

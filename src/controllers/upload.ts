@@ -39,7 +39,8 @@ class Upload {
         email: string;
         id: string;
       }
-      const jwtData = jwt.verify(req.body.jwtToken, process.env.JWT_SECRET);
+      const { jwtToken } = req.body;
+      const jwtData = jwt.verify(jwtToken, process.env.JWT_SECRET);
       const isJWTData = (input: object | string): input is JwtInterface => {
         return typeof input === 'object' && 'id' in input;
       };
@@ -52,10 +53,7 @@ class Upload {
       const signedUrl = await Store.getSignedUrl(contentType, key, expires);
       // TODO: Save signedUrl to temporary table, check this table against the bucket and keep clean
       if (!signedUrl) throw new Error('Signed URL was not created');
-      res.status(200).send({
-        jwtToken: req.body.jwtToken,
-        signedUrl,
-      });
+      res.status(200).send({ jwtToken, signedUrl });
     } catch (error) {
       res.status(400).send({
         code: sha1('getSignedUrl' + error.message || 'Internal Server Error'),

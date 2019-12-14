@@ -33,7 +33,9 @@ class Join {
       });
       const { email, password, fullName } = req.body;
       Joi.validate({ email, password, fullName }, schema, (err, val) => {
-        if (err) throw new Error('Failed to validate input ' + err.details[0].message);
+        if (err) {
+          throw new Error('Failed to validate input ' + err.details[0].message);
+        }
         req.body = val;
         next();
       });
@@ -97,7 +99,9 @@ class Join {
       });
       const { confirmationCode } = req.body;
       Joi.validate({ confirmationCode }, schema, (err, val) => {
-        if (err) throw new Error('Failed to validate input ' + err.details[0].message);
+        if (err) {
+          throw new Error('Failed to validate input ' + err.details[0].message);
+        }
         req.body = val;
         next();
       });
@@ -155,7 +159,9 @@ class Join {
       });
       const { jwtToken } = req.body;
       Joi.validate({ jwtToken }, schema, (err, val) => {
-        if (err) throw new Error('Failed to validate input ' + err.details[0].message);
+        if (err) {
+          throw new Error('Failed to validate input ' + err.details[0].message);
+        }
         req.body = val;
         next();
       });
@@ -175,12 +181,13 @@ class Join {
         email: string;
         id: string;
       }
-      const jwtToken = jwt.verify(req.body.jwtToken, process.env.JWT_SECRET);
+      const { jwtToken } = req.body;
+      const jwtData = jwt.verify(jwtToken, process.env.JWT_SECRET);
       const isJWTData = (input: object | string): input is JwtInterface => {
         return typeof input === 'object' && 'id' in input;
       };
-      if (!isJWTData(jwtToken)) throw new Error('JWT could not be verified');
-      const email = jwtToken.email;
+      if (!isJWTData(jwtData)) throw new Error('JWT could not be verified');
+      const email = jwtData.email;
       const account = await userModel
         .findOneAndUpdate(
           { 'shared.email': email },
@@ -198,7 +205,7 @@ class Join {
       if (!sent) throw new Error('Email failed to send');
       res
         .status(200)
-        .send({ shared: account.shared, jwtToken: req.body.jwtToken });
+        .send({ shared: account.shared, jwtToken });
     } catch (error) {
       res.status(400).send({
         code: sha1(
