@@ -27,6 +27,8 @@ interface UserModelInterface extends Document {
     warningMessage: string;
     webSite: string;
   };
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 const userSchema: Schema = new Schema(
