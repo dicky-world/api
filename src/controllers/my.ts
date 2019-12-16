@@ -279,7 +279,7 @@ class My {
 
       if (bio) data['shared.bio'] = bio;
       if (country) data['shared.country'] = country;
-      if (email) data['shared.email'] = email;
+      if (email) data['shared.email'] = req.body.email;
       if (emailChanged) {
         data['shared.warningMessage'] = 'verify';
         data['email.confirmationCode'] = confirmationCode;
@@ -391,6 +391,73 @@ class My {
         .exec();
       if (!account2) throw new Error('Database failed to find');
       res.status(200).send({ shared: account2.shared, jwtToken });
+    } catch (error) {
+      res.status(400).send({
+        code: sha1('avatar' + error.message || 'Internal Server Error'),
+        error: error.message || 'Internal Server Error',
+      });
+    }
+  };
+
+  static validatePreferences = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const schema = Joi.object().keys({
+        currency: Joi.string()
+          .trim()
+          .max(3)
+          .required(),
+        jwtToken: Joi.string()
+          .required()
+          .regex(/^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_.+/=]*$/),
+        language: Joi.string()
+          .trim()
+          .max(10)
+          .required(),
+      });
+      const { currency, jwtToken, language } = req.body;
+      Joi.validate({ currency, jwtToken, language }, schema, (err, val) => {
+        if (err) {
+          throw new Error('Failed to validate input ' + err.details[0].message);
+        }
+        req.body = val;
+        next();
+      });
+    } catch (error) {
+      res.status(400).send({
+        code: sha1('validateAvatar' + error.message || 'Internal Server Error'),
+        error: error.message || 'Internal Server Error',
+      });
+    }
+  };
+
+  static preferences = async (req: Request, res: Response) => {
+    try {
+      const { currency, jwtToken, language } = req.body;
+      interface JwtInterface {
+        email: string;
+        id: string;
+      }
+      const jwtData = jwt.verify(jwtToken, process.env.JWT_SECRET);
+      const isJWTData = (input: object | string): input is JwtInterface => {
+        return typeof input === 'object' && 'id' in input;
+      };
+      if (!isJWTData(jwtData)) throw new Error('JWT could not be verified');
+      const { email } = jwtData;
+      const account = await userModel
+        .findOneAndUpdate(
+          { 'shared.email': email },
+          {
+            $set: { 'shared.language': language, 'shared.currency': currency },
+          },
+          { new: true }
+        )
+        .exec();
+      if (!account) throw new Error('Database failed to find');
+      res.status(200).send({ shared: account.shared, jwtToken });
     } catch (error) {
       res.status(400).send({
         code: sha1('avatar' + error.message || 'Internal Server Error'),

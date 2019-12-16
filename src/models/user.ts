@@ -15,6 +15,7 @@ interface UserModelInterface extends Document {
   shared: {
     avatarId: string;
     bio: string;
+    currency: string;
     country: string;
     dob: string;
     email: string;
@@ -47,6 +48,7 @@ const userSchema: Schema = new Schema(
       avatarId: { type: String },
       bio: { type: String },
       country: { type: String },
+      currency: { type: String, default: 'USD' },
       dob: { type: Date },
       email: { type: String, required: true, unique: true, index: true },
       fullName: { type: String },
