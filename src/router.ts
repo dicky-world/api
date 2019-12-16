@@ -23,6 +23,7 @@ router.post('/my/preferences', My.validatePreferences, My.preferences);
 router.post('/my/password', My.validatePassword, My.password);
 router.put('/my/location', My.validateLocation, My.location);
 router.post('/my/avatar', My.validateAvatar, My.avatar);
+router.post('/my/cover', My.validateCover, My.cover);
 
 router.post(
   '/login/reset-password',

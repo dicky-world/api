@@ -143,6 +143,73 @@ class My {
     }
   };
 
+  static validateCover = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const schema = Joi.object().keys({
+        coverId: Joi.string()
+          .trim()
+          .max(70)
+          .required(),
+        jwtToken: Joi.string()
+          .required()
+          .regex(/^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_.+/=]*$/),
+      });
+      const { coverId, jwtToken } = req.body;
+      Joi.validate({ coverId, jwtToken }, schema, (err, val) => {
+        if (err) {
+          throw new Error('Failed to validate input ' + err.details[0].message);
+        }
+        req.body = val;
+        next();
+      });
+    } catch (error) {
+      res.status(400).send({
+        code: sha1('validateAvatar' + error.message || 'Internal Server Error'),
+        error: error.message || 'Internal Server Error',
+      });
+    }
+  };
+
+  static cover = async (req: Request, res: Response) => {
+    try {
+      interface JwtInterface {
+        email: string;
+        id: string;
+      }
+      const { jwtToken, coverId } = req.body;
+      const jwtData = jwt.verify(jwtToken, process.env.JWT_SECRET);
+      const isJWTData = (input: object | string): input is JwtInterface => {
+        return typeof input === 'object' && 'id' in input;
+      };
+      if (!isJWTData(jwtData)) throw new Error('JWT could not be verified');
+      const email = jwtData.email;
+      const account = await userModel
+        .findOneAndUpdate(
+          { 'shared.email': email },
+          {
+            $set: { 'shared.coverId': coverId },
+          }
+        )
+        .exec();
+      if (!account) throw new Error('Database failed to find');
+      if (account.shared.coverId) {
+        const deletedOldImg = await Store.deleteObject(account.shared.coverId);
+        if (!deletedOldImg) throw new Error('Old Image was not deleted');
+      }
+      account.shared.coverId = coverId;
+      res.status(200).send({ shared: account.shared, jwtToken });
+    } catch (error) {
+      res.status(400).send({
+        code: sha1('avatar' + error.message || 'Internal Server Error'),
+        error: error.message || 'Internal Server Error',
+      });
+    }
+  };
+
   static validateProfile = async (
     req: Request,
     res: Response,
