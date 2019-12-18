@@ -15,11 +15,13 @@ interface UserModelInterface extends Document {
   shared: {
     avatarId: string;
     bio: string;
-    currency: string;
-    coverId: string;
     country: string;
+    coverId: string;
+    currency: string;
     dob: string;
     email: string;
+    followers: number,
+    following: number,
     fullName: string;
     gender: string;
     language: string;
@@ -28,6 +30,8 @@ interface UserModelInterface extends Document {
     username: string;
     warningMessage: string;
     webSite: string;
+    canFollow: boolean;
+    isMe: boolean;
   };
   createdAt: Date;
   updatedAt: Date;
@@ -42,19 +46,23 @@ const userSchema: Schema = new Schema(
     },
     password: {
       hash: { type: String },
-      resetCode: { type: String, unique: true, index: true },
+      resetCode: { type: String, index: true },
       sentAt: { type: Date },
     },
     shared: {
       avatarId: { type: String },
       bio: { type: String },
+      canFollow: {type: Boolean},
       country: { type: String },
       coverId: { type: String },
       currency: { type: String, default: 'USD' },
       dob: { type: Date },
       email: { type: String, required: true, unique: true, index: true },
+      followers: { type: Number, default: 0},
+      following: { type: Number, default: 0},
       fullName: { type: String },
       gender: { type: String },
+      isMe: {type: Boolean},
       language: { type: String, default: 'en' },
       location: { type: String },
       loggedIn: { type: Boolean, default: true },

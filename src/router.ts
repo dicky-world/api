@@ -10,7 +10,9 @@ const router = Router();
 
 router.get('/health', Health.check);
 
-router.get('/user/:username', User.validateProfile, User.profile);
+router.post('/user/profile', User.validateProfile, User.profile);
+router.post('/user/follow', User.validateFollow, User.follow);
+router.post('/user/unfollow', User.validateUnfollow, User.unfollow);
 
 router.post('/login', Login.validateLogin, Login.login);
 router.post('/join', Join.validateJoin, Join.join);
