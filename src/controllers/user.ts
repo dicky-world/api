@@ -1,7 +1,8 @@
 import * as Joi from '@hapi/joi';
 import { NextFunction, Request, Response } from 'express';
 import * as jwt from 'jsonwebtoken';
-import { followingModel, FollowingModelInterface } from '../models/following';
+import * as mongoose from 'mongoose';
+import { followingModel } from '../models/following';
 import { userModel } from '../models/user';
 
 class User {
@@ -227,6 +228,202 @@ class User {
       res.status(400).send({ message: 'Server Error', error });
     }
   };
+
+  static validateFollowers = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    const schema = Joi.object().keys({
+      jwtToken: Joi.string()
+        .regex(/^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_.+/=]*$/)
+        .allow(''),
+      username: Joi.string()
+        .trim()
+        .max(50)
+        .required(),
+    });
+    const { jwtToken, username } = req.body;
+    Joi.validate({ jwtToken, username }, schema, (err, val) => {
+      if (!err) {
+        req.params = val;
+        next();
+      } else res.status(400).send(err.details);
+    });
+  };
+
+  static followers = async (req: Request, res: Response) => {
+    try {
+      let myId: string;
+      const { jwtToken, username } = req.body;
+      if (jwtToken) {
+        interface JwtInterface {
+          email: string;
+          id: string;
+        }
+        const jwtData = jwt.verify(jwtToken, process.env.JWT_SECRET);
+        const isJWTData = (input: object | string): input is JwtInterface => {
+          return typeof input === 'object' && 'id' in input;
+        };
+        if (!isJWTData(jwtData)) throw new Error('JWT could not be verified');
+        myId = jwtData.id;
+      }
+      const objectId = mongoose.Types.ObjectId(myId);
+      const followers = await userModel.aggregate([
+        { $match: { 'shared.username': username } },
+        {
+          $lookup: {
+            as: 'followers',
+            foreignField: 'followingId',
+            from: 'followings',
+            localField: '_id',
+          },
+        },
+        { $unwind: { path: '$followers' } },
+        {
+          $lookup: {
+            as: 'followerData',
+            foreignField: '_id',
+            from: 'users',
+            localField: 'followers.userId',
+          },
+        },
+        { $unwind: { path: '$followerData' } },
+        {
+          $lookup: {
+            as: 'amIinThisArray',
+            foreignField: 'followingId',
+            from: 'followings',
+            localField: 'followerData._id',
+          },
+        },
+        {
+          $addFields: {
+            avatarId: '$followerData.shared.avatarId',
+            fullName: '$followerData.shared.fullName',
+            imFollowing: {
+              $in: [
+                objectId,
+                  '$amIinThisArray.userId',
+              ],
+          },
+            username: '$followerData.shared.username',
+          },
+        },
+        {
+          $project: {
+            _id: 0.0,
+            avatarId: 1.0,
+            fullName: 1.0,
+            imFollowing: 1.0,
+            username: 1.0,
+          },
+        },
+      ]);
+      res.status(200).send({ followers });
+    } catch (error) {
+      res.status(400).send({ message: 'Server Error', error });
+    }
+  };
+
+  static validateFollowing = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    const schema = Joi.object().keys({
+      jwtToken: Joi.string()
+        .regex(/^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_.+/=]*$/)
+        .allow(''),
+      username: Joi.string()
+        .trim()
+        .max(50)
+        .required(),
+    });
+    const { jwtToken, username } = req.body;
+    Joi.validate({ jwtToken, username }, schema, (err, val) => {
+      if (!err) {
+        req.params = val;
+        next();
+      } else res.status(400).send(err.details);
+    });
+  };
+
+  static following = async (req: Request, res: Response) => {
+    try {
+      let myId: string;
+      const { jwtToken, username } = req.body;
+      if (jwtToken) {
+        interface JwtInterface {
+          email: string;
+          id: string;
+        }
+        const jwtData = jwt.verify(jwtToken, process.env.JWT_SECRET);
+        const isJWTData = (input: object | string): input is JwtInterface => {
+          return typeof input === 'object' && 'id' in input;
+        };
+        if (!isJWTData(jwtData)) throw new Error('JWT could not be verified');
+        myId = jwtData.id;
+      }
+      const objectId = mongoose.Types.ObjectId(myId);
+      const following = await userModel.aggregate([
+        { $match: { 'shared.username': username } },
+        {
+          $lookup: {
+            as: 'followers',
+            foreignField: 'userId',
+            from: 'followings',
+            localField: '_id',
+          },
+        },
+        { $unwind: { path: '$followers' } },
+        {
+          $lookup: {
+            as: 'followerData',
+            foreignField: '_id',
+            from: 'users',
+            localField: 'followers.followingId',
+          },
+        },
+        { $unwind: { path: '$followerData' } },
+        {
+          $lookup: {
+            as: 'amIinThisArray',
+            foreignField: 'userId',
+            from: 'followings',
+            localField: 'followerData._id',
+          },
+        },
+        {
+          $addFields: {
+            avatarId: '$followerData.shared.avatarId',
+            fullName: '$followerData.shared.fullName',
+            imFollowing: {
+              $in: [
+                objectId,
+                  '$amIinThisArray.followingId',
+              ],
+          },
+            username: '$followerData.shared.username',
+          },
+        },
+        {
+          $project: {
+            _id: 0.0,
+            avatarId: 1.0,
+            fullName: 1.0,
+            imFollowing: 1.0,
+            username: 1.0,
+          },
+        },
+      ]);
+      res.status(200).send({ following });
+    } catch (error) {
+      res.status(400).send({ message: 'Server Error', error });
+    }
+  };
+
+
 }
 
 export { User };

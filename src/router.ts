@@ -13,6 +13,8 @@ router.get('/health', Health.check);
 router.post('/user/profile', User.validateProfile, User.profile);
 router.post('/user/follow', User.validateFollow, User.follow);
 router.post('/user/unfollow', User.validateUnfollow, User.unfollow);
+router.post('/user/followers', User.validateFollowers, User.followers);
+router.post('/user/following', User.validateFollowing, User.following);
 
 router.post('/login', Login.validateLogin, Login.login);
 router.post('/join', Join.validateJoin, Join.join);
