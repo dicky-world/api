@@ -51,6 +51,7 @@ class Join {
     try {
       const { email, password, fullName } = req.body;
       const confirmationCode = randomBytes(20).toString('hex');
+      const username = randomBytes(10).toString('hex');
       const alreadyRegistered = await userModel
         .findOne({ 'shared.email': email })
         .exec();
@@ -60,7 +61,7 @@ class Join {
       const user = new userModel({
         email: { confirmationCode },
         password: { hash },
-        shared: { email, fullName },
+        shared: { email, fullName, username },
       } as UserModelInterface);
       const saved = await user.save();
       if (!saved) throw new Error('Database failed to save');
