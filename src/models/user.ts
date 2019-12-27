@@ -44,7 +44,7 @@ interface UserModelInterface extends Document {
 const userSchema: Schema = new Schema(
   {
     email: {
-      confirmationCode: { type: String, unique: true, index: true },
+      confirmationCode: { type: String, index: true },
       confirmationSentAt: { type: Date },
       confirmed: { type: Boolean, default: false },
     },
