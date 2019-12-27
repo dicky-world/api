@@ -1,4 +1,5 @@
 import * as Joi from '@hapi/joi';
+import * as authenticator from 'authenticator';
 import * as bcrypt from 'bcrypt';
 import { randomBytes } from 'crypto';
 import { NextFunction, Request, Response } from 'express';
@@ -244,6 +245,8 @@ class My {
         jwtToken: Joi.string()
           .required()
           .regex(/^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_.+/=]*$/),
+        mobileCode: Joi.string().allow('').max(4),
+        mobileNumber: Joi.string().allow('').max(15),
         month: Joi.string().max(2),
         username: Joi.string()
           .trim()
@@ -263,6 +266,8 @@ class My {
         fullName,
         gender,
         jwtToken,
+        mobileCode,
+        mobileNumber,
         month,
         webSite,
         year,
@@ -277,6 +282,8 @@ class My {
           fullName,
           gender,
           jwtToken,
+          mobileCode,
+          mobileNumber,
           month,
           webSite,
           year,
@@ -318,6 +325,8 @@ class My {
         jwtToken,
         webSite,
         day,
+        mobileCode,
+        mobileNumber,
         month,
         year,
       } = req.body;
@@ -329,21 +338,24 @@ class My {
       const email = jwtData.email;
 
       interface DataInterface {
+        ['email.confirmationCode']?: string;
+        ['email.confirmed']?: boolean;
         ['shared.bio']?: string;
         ['shared.country']?: string;
         ['shared.dob']?: Date;
         ['shared.email']?: string;
         ['shared.fullName']?: string;
         ['shared.gender']?: string;
+        ['shared.mobileCode']?: string;
+        ['shared.mobileNumber']?: string;
         ['shared.username']?: string;
         ['shared.warningMessage']?: 'verify' | '';
         ['shared.webSite']?: string;
-        ['email.confirmationCode']?: string;
-        ['email.confirmed']?: boolean;
       }
 
       const data: DataInterface = {};
-
+      if (mobileCode) data['shared.mobileCode'] = mobileCode;
+      if (mobileNumber) data['shared.mobileNumber'] = mobileNumber;
       if (bio) data['shared.bio'] = bio;
       if (country) data['shared.country'] = country;
       if (email) data['shared.email'] = req.body.email;
@@ -420,7 +432,7 @@ class My {
       );
     } catch (error) {
       res.status(400).send({
-        code: sha1('validateAvatar' + error.message || 'Internal Server Error'),
+        code: sha1('validatePassword' + error.message || 'Internal Server Error'),
         error: error.message || 'Internal Server Error',
       });
     }
@@ -460,7 +472,7 @@ class My {
       res.status(200).send({ shared: account2.shared, jwtToken });
     } catch (error) {
       res.status(400).send({
-        code: sha1('avatar' + error.message || 'Internal Server Error'),
+        code: sha1('password' + error.message || 'Internal Server Error'),
         error: error.message || 'Internal Server Error',
       });
     }
@@ -495,7 +507,7 @@ class My {
       });
     } catch (error) {
       res.status(400).send({
-        code: sha1('validateAvatar' + error.message || 'Internal Server Error'),
+        code: sha1('validatePreferences' + error.message || 'Internal Server Error'),
         error: error.message || 'Internal Server Error',
       });
     }
@@ -527,7 +539,75 @@ class My {
       res.status(200).send({ shared: account.shared, jwtToken });
     } catch (error) {
       res.status(400).send({
-        code: sha1('avatar' + error.message || 'Internal Server Error'),
+        code: sha1('preferences' + error.message || 'Internal Server Error'),
+        error: error.message || 'Internal Server Error',
+      });
+    }
+  };
+
+  static validateTwoFactorAuth = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const schema = Joi.object().keys({
+        jwtToken: Joi.string()
+          .required()
+          .regex(/^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_.+/=]*$/),
+      });
+      const { jwtToken } = req.body;
+      Joi.validate({ jwtToken }, schema, (err, val) => {
+        if (err) {
+          throw new Error('Failed to validate input ' + err.details[0].message);
+        }
+        req.body = val;
+        next();
+      });
+    } catch (error) {
+      res.status(400).send({
+        code: sha1('validate2fa' + error.message || 'Internal Server Error'),
+        error: error.message || 'Internal Server Error',
+      });
+    }
+  };
+
+  static twoFactorAuth = async (req: Request, res: Response) => {
+    try {
+      const { jwtToken } = req.body;
+      interface JwtInterface {
+        email: string;
+        id: string;
+      }
+      const jwtData = jwt.verify(jwtToken, process.env.JWT_SECRET);
+      const isJWTData = (input: object | string): input is JwtInterface => {
+        return typeof input === 'object' && 'id' in input;
+      };
+      if (!isJWTData(jwtData)) throw new Error('JWT could not be verified');
+      const { email } = jwtData;
+      const exists = await userModel.findOne({ 'shared.email': email }).exec();
+      if (!exists) throw new Error('Database failed to find');
+      let formattedKey: string;
+      if (exists.password.formattedKey) {
+        formattedKey = exists.password.formattedKey;
+      } else {
+        formattedKey = authenticator.generateKey();
+      }
+      const account = await userModel
+      .findOneAndUpdate(
+        { 'shared.email': email },
+        {
+          $set: { 'password.formattedKey': formattedKey },
+        },
+        { new: true }
+      )
+      .exec();
+      if (!account) throw new Error('Database failed to find');
+      const totpUri = authenticator.generateTotpUri(formattedKey, email, 'DICKY', 'SHA1', 6, 30);
+      res.status(200).send({ jwtToken, totpUri, formattedKey });
+    } catch (error) {
+      res.status(400).send({
+        code: sha1('preferences' + error.message || 'Internal Server Error'),
         error: error.message || 'Internal Server Error',
       });
     }

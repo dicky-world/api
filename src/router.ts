@@ -17,6 +17,7 @@ router.post('/user/followers', User.validateFollowers, User.followers);
 router.post('/user/following', User.validateFollowing, User.following);
 
 router.post('/login', Login.validateLogin, Login.login);
+router.post('/login/2fa', Login.validateTwoFactorCode, Login.twoFactorCode);
 router.post('/join', Join.validateJoin, Join.join);
 router.post('/join/resend-email', Join.validateResendEmail, Join.resendEmail);
 
@@ -28,6 +29,7 @@ router.post('/my/password', My.validatePassword, My.password);
 router.put('/my/location', My.validateLocation, My.location);
 router.post('/my/avatar', My.validateAvatar, My.avatar);
 router.post('/my/cover', My.validateCover, My.cover);
+router.post('/my/2fa', My.validateTwoFactorAuth, My.twoFactorAuth);
 
 router.post(
   '/login/reset-password',

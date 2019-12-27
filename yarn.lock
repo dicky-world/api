@@ -327,6 +327,11 @@
     "@types/mongodb" "*"
     "@types/node" "*"
 
+"@types/authenticator@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@types/authenticator/-/authenticator-1.1.0.tgz#89bae8a9868691a4310be7a3957b0a2964dafac0"
+  integrity sha512-34uc/Y6/wof9AnGMPfkk2f5fEhUqd7mqw4CSlZqDzeubwbeDxhWA5XAfFJE5r9hwhGm9+sagVZBoO2RCSx/NPA==
+
 "@types/babel__core@^7.1.0":
   version "7.1.2"
   resolved "https://registry.yarnpkg.com/@types/babel__core/-/babel__core-7.1.2.tgz#608c74f55928033fce18b99b213c16be4b3d114f"
@@ -816,6 +821,24 @@ atob@^2.1.1:
   resolved "https://registry.yarnpkg.com/atob/-/atob-2.1.2.tgz#6d9517eb9e030d2436666651e86bd9f6f13533c9"
   integrity sha512-Wm6ukoaOGJi/73p/cl2GvLjTI5JM1k/O14isD73YML8StrH/7/lRFgmg8nICZgD3bZZvjwCGxtMOD3wWNAu8cg==
 
+authenticator-cli@^1.0.5:
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/authenticator-cli/-/authenticator-cli-1.0.5.tgz#4374783c654918050711f044e7b45526631243c2"
+  integrity sha512-8FjXzLnytd93zE9IxtOr7/uptlxGBjQhWw6qEjPPLhfq1TqrUpaBEhPYOErtHWIPuveAgzHHEBgp2bh6GdQ6Ew==
+  dependencies:
+    authenticator "^1.1.0"
+    cli "^1.0.1"
+    qrcode-terminal "^0.12.0"
+
+authenticator@^1.1.0, authenticator@^1.1.5:
+  version "1.1.5"
+  resolved "https://registry.yarnpkg.com/authenticator/-/authenticator-1.1.5.tgz#ebc6d01ea91b91d631c6549f8cde82ec38f487f1"
+  integrity sha512-eaT0Trfxka28DkljLQDxuoSn9uDTaYIoXhZMsAw3Z54fNC7BMIsvIxfG6Y5s+y02CH59IIyY3p1EOMqeIpljWQ==
+  dependencies:
+    authenticator-cli "^1.0.5"
+    notp "^2.0.3"
+    thirty-two "0.0.2"
+
 aws-sdk@^2.528.0:
   version "2.528.0"
   resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.528.0.tgz#9836e619607068171844ad27ccfe0082b6a118e9"
@@ -1252,6 +1275,14 @@ cli-boxes@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/cli-boxes/-/cli-boxes-1.0.0.tgz#4fa917c3e59c94a004cd61f8ee509da651687143"
   integrity sha1-T6kXw+WclKAEzWH47lCdplFocUM=
+
+cli@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/cli/-/cli-1.0.1.tgz#22817534f24bfa4950c34d532d48ecbc621b8c14"
+  integrity sha1-IoF1NPJL+klQw01TLUjsvGIbjBQ=
+  dependencies:
+    exit "0.1.2"
+    glob "^7.1.1"
 
 cliui@^3.0.3:
   version "3.2.0"
@@ -2011,7 +2042,7 @@ execa@^1.0.0:
     signal-exit "^3.0.0"
     strip-eof "^1.0.0"
 
-exit@^0.1.2:
+exit@0.1.2, exit@^0.1.2:
   version "0.1.2"
   resolved "https://registry.yarnpkg.com/exit/-/exit-0.1.2.tgz#0632638f8d877cc82107d30a0fff1a17cba1cd0c"
   integrity sha1-BjJjj42HfMghB9MKD/8aF8uhzQw=
@@ -4180,6 +4211,11 @@ normalize-path@^3.0.0:
   resolved "https://registry.yarnpkg.com/normalize-path/-/normalize-path-3.0.0.tgz#0dcd69ff23a1c9b11fd0978316644a0388216a65"
   integrity sha512-6eZs5Ls3WtCisHWp9S2GUy8dqkpGi4BVSz3GaqiE6ezub0512ESztXUwUB6C6IKbQkY2Pnb/mD4WYojCRwcwLA==
 
+notp@^2.0.3:
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/notp/-/notp-2.0.3.tgz#a9fd11e25cfe1ccb39fc6689544ee4c10ef9a577"
+  integrity sha1-qf0R4lz+HMs5/GaJVE7kwQ75pXc=
+
 npm-bundled@^1.0.1:
   version "1.0.6"
   resolved "https://registry.yarnpkg.com/npm-bundled/-/npm-bundled-1.0.6.tgz#e7ba9aadcef962bb61248f91721cd932b3fe6bdd"
@@ -4649,6 +4685,11 @@ punycode@^2.1.0, punycode@^2.1.1:
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/punycode/-/punycode-2.1.1.tgz#b58b010ac40c22c5657616c8d2c2c02c7bf479ec"
   integrity sha512-XRsRjdf+j5ml+y/6GKHPZbrF/8p2Yga0JPtdqTIY2Xe5ohJPD9saDJJLPvp9+NSBprVvevdXZybnj2cv8OEd0A==
+
+qrcode-terminal@^0.12.0:
+  version "0.12.0"
+  resolved "https://registry.yarnpkg.com/qrcode-terminal/-/qrcode-terminal-0.12.0.tgz#bb5b699ef7f9f0505092a3748be4464fe71b5819"
+  integrity sha512-EXtzRZmC+YGmGlDFbXKxQiMZNwCLEO6BANKXG4iCtSIM0yqc/pappSx3RIKr4r0uh5JsBckOXeKrB3Iz7mdQpQ==
 
 qs@6.7.0:
   version "6.7.0"
@@ -5542,6 +5583,11 @@ test-exclude@^5.2.3:
     minimatch "^3.0.4"
     read-pkg-up "^4.0.0"
     require-main-filename "^2.0.0"
+
+thirty-two@0.0.2:
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/thirty-two/-/thirty-two-0.0.2.tgz#4253e29d8cb058f0480267c5698c0e4927e54b6a"
+  integrity sha1-QlPinYywWPBIAmfFaYwOSSflS2o=
 
 throat@^4.0.0:
   version "4.1.0"

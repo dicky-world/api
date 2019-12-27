@@ -8,6 +8,7 @@ interface UserModelInterface extends Document {
     confirmed: boolean;
   };
   password: {
+    formattedKey: string;
     hash: string;
     resetCode: string;
     sentAt: string;
@@ -15,6 +16,7 @@ interface UserModelInterface extends Document {
   shared: {
     avatarId: string;
     bio: string;
+    canFollow: boolean;
     country: string;
     coverId: string;
     currency: string;
@@ -24,14 +26,16 @@ interface UserModelInterface extends Document {
     following: number,
     fullName: string;
     gender: string;
+    isMe: boolean;
     language: string;
     location: string;
     loggedIn: boolean;
+    mobileCode: string;
+    mobileNumber: string;
+    twofactor: boolean;
     username: string;
     warningMessage: string;
     webSite: string;
-    canFollow: boolean;
-    isMe: boolean;
   };
   createdAt: Date;
   updatedAt: Date;
@@ -45,6 +49,7 @@ const userSchema: Schema = new Schema(
       confirmed: { type: Boolean, default: false },
     },
     password: {
+      formattedKey: { type: String },
       hash: { type: String },
       resetCode: { type: String, index: true },
       sentAt: { type: Date },
@@ -66,6 +71,9 @@ const userSchema: Schema = new Schema(
       language: { type: String, default: 'en' },
       location: { type: String },
       loggedIn: { type: Boolean, default: true },
+      mobileCode: { type: String },
+      mobileNumber: { type: String },
+      twofactor: {type: Boolean, default: false},
       username: { type: String, unique: true, index: true }, // TODO MAKE REQUIRED
       warningMessage: { type: String, default: 'verify' },
       webSite: { type: String },
