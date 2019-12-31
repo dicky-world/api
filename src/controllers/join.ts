@@ -51,7 +51,7 @@ class Join {
     try {
       const { email, password, fullName } = req.body;
       const confirmationCode = randomBytes(20).toString('hex');
-      const username = randomBytes(10).toString('hex');
+      const username = randomBytes(6).toString('hex');
       const alreadyRegistered = await userModel
         .findOne({ 'shared.email': email })
         .exec();

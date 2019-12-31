@@ -44,14 +44,14 @@ interface UserModelInterface extends Document {
 const userSchema: Schema = new Schema(
   {
     email: {
-      confirmationCode: { type: String, index: true },
+      confirmationCode: { type: String },
       confirmationSentAt: { type: Date },
       confirmed: { type: Boolean, default: false },
     },
     password: {
       formattedKey: { type: String },
       hash: { type: String },
-      resetCode: { type: String, index: true },
+      resetCode: { type: String },
       sentAt: { type: Date },
     },
     shared: {
@@ -62,7 +62,7 @@ const userSchema: Schema = new Schema(
       coverId: { type: String },
       currency: { type: String, default: 'USD' },
       dob: { type: Date },
-      email: { type: String, required: true, unique: true, index: true },
+      email: { type: String, required: true },
       followers: { type: Number, default: 0},
       following: { type: Number, default: 0},
       fullName: { type: String },
@@ -74,7 +74,7 @@ const userSchema: Schema = new Schema(
       mobileCode: { type: String },
       mobileNumber: { type: String },
       twofactor: {type: Boolean, default: false},
-      username: { type: String, unique: true, index: true }, // TODO MAKE REQUIRED
+      username: { type: String},
       warningMessage: { type: String, default: 'verify' },
       webSite: { type: String },
     },
