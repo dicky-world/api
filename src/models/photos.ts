@@ -2,28 +2,28 @@ import * as mongoose from 'mongoose';
 import { Document, Schema } from 'mongoose';
 
 interface PhotoModelInterface extends Document {
-  dhash: string;
+  category: string;
   flagged: boolean;
+  previewId: string;
   published: boolean;
-  photoId: string;
   size: string;
-  source: string;
-  sourceType: string;
+  thumbnailId: string;
   userId: string;
   vehicleId: string;
+  zoomId: string;
 }
 
 const photoSchema: Schema = new Schema(
   {
-    dhash: { type: String },
+    category: { type: String },
     flagged: { type: Boolean },
-    photoId: { type: String },
+    previewId: { type: String },
     published: { type: Boolean },
     size: { type: String },
-    source: { type: String },
-    sourceType: { type: String },
+    thumbnailId: { type: String },
     userId: { type: mongoose.Types.ObjectId, index: true },
     vehicleId: { type: mongoose.Types.ObjectId, index: true },
+    zoomId: { type: String },
   },
   {
     timestamps: true,

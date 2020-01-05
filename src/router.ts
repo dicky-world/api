@@ -30,6 +30,8 @@ router.put('/my/location', My.validateLocation, My.location);
 router.post('/my/avatar', My.validateAvatar, My.avatar);
 router.post('/my/cover', My.validateCover, My.cover);
 router.post('/my/2fa', My.validateTwoFactorAuth, My.twoFactorAuth);
+router.post('/my/add-photo', My.validateAddPhoto, My.addPhoto);
+router.post('/my/photos', My.validateMyPhotos, My.myPhoto);
 
 router.post(
   '/login/reset-password',

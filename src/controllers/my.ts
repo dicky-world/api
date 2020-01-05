@@ -7,6 +7,7 @@ import * as jwt from 'jsonwebtoken';
 import sha1 = require('sha1');
 import { Email } from '../components/email';
 import { Store } from '../components/store';
+import { photoModel, PhotoModelInterface } from '../models/photos';
 import { userModel } from '../models/user';
 
 class My {
@@ -245,8 +246,12 @@ class My {
         jwtToken: Joi.string()
           .required()
           .regex(/^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_.+/=]*$/),
-        mobileCode: Joi.string().allow('').max(4),
-        mobileNumber: Joi.string().allow('').max(15),
+        mobileCode: Joi.string()
+          .allow('')
+          .max(4),
+        mobileNumber: Joi.string()
+          .allow('')
+          .max(15),
         month: Joi.string().max(2),
         username: Joi.string()
           .trim()
@@ -432,7 +437,9 @@ class My {
       );
     } catch (error) {
       res.status(400).send({
-        code: sha1('validatePassword' + error.message || 'Internal Server Error'),
+        code: sha1(
+          'validatePassword' + error.message || 'Internal Server Error'
+        ),
         error: error.message || 'Internal Server Error',
       });
     }
@@ -507,7 +514,9 @@ class My {
       });
     } catch (error) {
       res.status(400).send({
-        code: sha1('validatePreferences' + error.message || 'Internal Server Error'),
+        code: sha1(
+          'validatePreferences' + error.message || 'Internal Server Error'
+        ),
         error: error.message || 'Internal Server Error',
       });
     }
@@ -566,7 +575,7 @@ class My {
       });
     } catch (error) {
       res.status(400).send({
-        code: sha1('validate2fa' + error.message || 'Internal Server Error'),
+        code: sha1('validateTwoFactorAuth' + error.message || 'Internal Server Error'),
         error: error.message || 'Internal Server Error',
       });
     }
@@ -594,20 +603,163 @@ class My {
         formattedKey = authenticator.generateKey();
       }
       const account = await userModel
-      .findOneAndUpdate(
-        { 'shared.email': email },
-        {
-          $set: { 'password.formattedKey': formattedKey },
-        },
-        { new: true }
-      )
-      .exec();
+        .findOneAndUpdate(
+          { 'shared.email': email },
+          {
+            $set: { 'password.formattedKey': formattedKey },
+          },
+          { new: true }
+        )
+        .exec();
       if (!account) throw new Error('Database failed to find');
-      const totpUri = authenticator.generateTotpUri(formattedKey, email, 'DICKY', 'SHA1', 6, 30);
+      const totpUri = authenticator.generateTotpUri(
+        formattedKey,
+        email,
+        'DICKY',
+        'SHA1',
+        6,
+        30
+      );
       res.status(200).send({ jwtToken, totpUri, formattedKey });
     } catch (error) {
       res.status(400).send({
-        code: sha1('preferences' + error.message || 'Internal Server Error'),
+        code: sha1('twoFactorAuth' + error.message || 'Internal Server Error'),
+        error: error.message || 'Internal Server Error',
+      });
+    }
+  };
+
+  static validateAddPhoto = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const schema = Joi.object().keys({
+        category: Joi.string()
+          .trim()
+          .max(50)
+          .required(),
+        jwtToken: Joi.string()
+          .required()
+          .regex(/^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_.+/=]*$/),
+        previewId: Joi.string()
+          .trim()
+          .max(100)
+          .required(),
+        thumbnailId: Joi.string()
+          .trim()
+          .max(100)
+          .required(),
+        zoomId: Joi.string()
+          .trim()
+          .max(100)
+          .required(),
+      });
+      const { category, jwtToken, previewId, thumbnailId, zoomId } = req.body;
+      Joi.validate(
+        { category, jwtToken, previewId, thumbnailId, zoomId },
+        schema,
+        (err, val) => {
+          if (err) {
+            throw new Error(
+              'Failed to validate input ' + err.details[0].message
+            );
+          }
+          req.body = val;
+          next();
+        }
+      );
+    } catch (error) {
+      res.status(400).send({
+        code: sha1(
+          'validateAddPhoto' + error.message || 'Internal Server Error'
+        ),
+        error: error.message || 'Internal Server Error',
+      });
+    }
+  };
+
+  static addPhoto = async (req: Request, res: Response) => {
+    try {
+      const { category, jwtToken, previewId, thumbnailId, zoomId } = req.body;
+      interface JwtInterface {
+        email: string;
+        id: string;
+      }
+      const jwtData = jwt.verify(jwtToken, process.env.JWT_SECRET);
+      const isJWTData = (input: object | string): input is JwtInterface => {
+        return typeof input === 'object' && 'id' in input;
+      };
+      if (!isJWTData(jwtData)) throw new Error('JWT could not be verified');
+      const { id } = jwtData;
+      const user = new photoModel({
+        category,
+        previewId,
+        published: true,
+        thumbnailId,
+        userId: id,
+        zoomId,
+      } as PhotoModelInterface);
+      const saved = await user.save();
+      if (!saved) throw new Error('Database failed to save');
+      res.status(200).send({ jwtToken });
+    } catch (error) {
+      res.status(400).send({
+        code: sha1('addPhoto' + error.message || 'Internal Server Error'),
+        error: error.message || 'Internal Server Error',
+      });
+    }
+  };
+
+  static validateMyPhotos = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const schema = Joi.object().keys({
+        jwtToken: Joi.string()
+          .required()
+          .regex(/^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_.+/=]*$/),
+      });
+      const { jwtToken } = req.body;
+      Joi.validate({ jwtToken }, schema, (err, val) => {
+        if (err) {
+          throw new Error('Failed to validate input ' + err.details[0].message);
+        }
+        req.body = val;
+        next();
+      });
+    } catch (error) {
+      res.status(400).send({
+        code: sha1(
+          'validateMyPhotos' + error.message || 'Internal Server Error'
+        ),
+        error: error.message || 'Internal Server Error',
+      });
+    }
+  };
+
+  static myPhoto = async (req: Request, res: Response) => {
+    try {
+      const { jwtToken } = req.body;
+      interface JwtInterface {
+        email: string;
+        id: string;
+      }
+      const jwtData = jwt.verify(jwtToken, process.env.JWT_SECRET);
+      const isJWTData = (input: object | string): input is JwtInterface => {
+        return typeof input === 'object' && 'id' in input;
+      };
+      if (!isJWTData(jwtData)) throw new Error('JWT could not be verified');
+      const { id } = jwtData;
+      // TODO: sort by time stamp
+      const myPhotos = await photoModel.find({ userId: id }).limit(100).exec();
+      res.status(200).send({ jwtToken, myPhotos });
+    } catch (error) {
+      res.status(400).send({
+        code: sha1('myPhoto' + error.message || 'Internal Server Error'),
         error: error.message || 'Internal Server Error',
       });
     }
