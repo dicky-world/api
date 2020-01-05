@@ -741,7 +741,7 @@ class My {
     }
   };
 
-  static myPhoto = async (req: Request, res: Response) => {
+  static myPhotos = async (req: Request, res: Response) => {
     try {
       const { jwtToken } = req.body;
       interface JwtInterface {

@@ -2,6 +2,7 @@ import * as Joi from '@hapi/joi';
 import { NextFunction, Request, Response } from 'express';
 import * as jwt from 'jsonwebtoken';
 import * as mongoose from 'mongoose';
+import { Document, Schema } from 'mongoose';
 import { followingModel } from '../models/following';
 import { userModel } from '../models/user';
 
@@ -45,24 +46,63 @@ class User {
         if (!isJWTData(jwtData)) throw new Error('JWT could not be verified');
         id = jwtData.id;
       }
-      const account = await userModel
-        .findOne({ 'shared.username': username })
-        .exec();
-      if (!account) throw new Error('User not found');
-      if (id === account.id) {
-        account.shared.canFollow = false;
-        account.shared.isMe = true;
-        res.status(200).send({ shared: account.shared });
+      const account = await userModel.aggregate([
+        { $match: { 'shared.username': username } },
+        {
+          $lookup: {
+            as: 'photos',
+            from: 'photos',
+            let: {
+              local_id: '$_id',
+            },
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $eq: ['$$local_id', '$userId'],
+                  },
+                },
+              },
+              {
+                $sort: {
+                  createdAt: -1.0,
+                },
+              },
+              {
+                $limit: 50.0,
+              },
+            ],
+          },
+        },
+        {
+          $project: {
+            _id: 1.0,
+            photos: 1.0,
+            shared: 1.0,
+          },
+        },
+      ]);
+      if (!account[0]) throw new Error('User not found');
+      if (id === account[0]._id.toString()) {
+        account[0].shared.canFollow = false;
+        account[0].shared.isMe = true;
+        res
+          .status(200)
+          .send({ shared: account[0].shared, photos: account[0].photos });
       } else {
         const alreadyFollowing = await followingModel
-          .findOne({ userId: id, followingId: account.id })
+          .findOne({ userId: id, followingId: account[0]._id })
           .exec();
         if (alreadyFollowing) {
-          account.shared.canFollow = false;
-          res.status(200).send({ shared: account.shared });
+          account[0].shared.canFollow = false;
+          res
+            .status(200)
+            .send({ shared: account[0].shared, photos: account[0].photos });
         } else {
-          account.shared.canFollow = true;
-          res.status(200).send({ shared: account.shared });
+          account[0].shared.canFollow = true;
+          res
+            .status(200)
+            .send({ shared: account[0].shared, photos: account[0].photos });
         }
       }
     } catch (error) {
@@ -302,11 +342,8 @@ class User {
             avatarId: '$followerData.shared.avatarId',
             fullName: '$followerData.shared.fullName',
             imFollowing: {
-              $in: [
-                objectId,
-                  '$amIinThisArray.userId',
-              ],
-          },
+              $in: [objectId, '$amIinThisArray.userId'],
+            },
             username: '$followerData.shared.username',
           },
         },
@@ -399,11 +436,8 @@ class User {
             avatarId: '$followerData.shared.avatarId',
             fullName: '$followerData.shared.fullName',
             imFollowing: {
-              $in: [
-                objectId,
-                  '$amIinThisArray.followingId',
-              ],
-          },
+              $in: [objectId, '$amIinThisArray.followingId'],
+            },
             username: '$followerData.shared.username',
           },
         },
@@ -422,8 +456,6 @@ class User {
       res.status(400).send({ message: 'Server Error', error });
     }
   };
-
-
 }
 
 export { User };
