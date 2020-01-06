@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { All } from './controllers/all';
 import { Health } from './controllers/health';
 import { Join } from './controllers/join';
 import { Login } from './controllers/login';
@@ -9,6 +10,7 @@ import { User } from './controllers/user';
 const router = Router();
 
 router.get('/health', Health.check);
+router.get('/photos', All.validatePhotos, All.photos);
 
 router.post('/user/profile', User.validateProfile, User.profile);
 router.post('/user/follow', User.validateFollow, User.follow);
