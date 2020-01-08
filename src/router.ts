@@ -11,6 +11,7 @@ const router = Router();
 
 router.get('/health', Health.check);
 router.get('/photos', All.validatePhotos, All.photos);
+router.get('/photos/detail', All.validatePhotosDetail, All.photosDetail);
 
 router.post('/user/profile', User.validateProfile, User.profile);
 router.post('/user/follow', User.validateFollow, User.follow);
